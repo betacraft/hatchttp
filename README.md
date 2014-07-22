@@ -31,26 +31,26 @@ class is templatized with the return type of the ```task()``` method. All the lo
 this method by the child task. For example if you want to send a get call to google.com then you would extend Task as
  following.
  
-```
-        Task<String> getGoogleHomePageHtml = new Task<String>(getContext(), mTaskMonitor) {
-            @Override
-            protected String task() throws HatcHttpException {
-                return HatcHttpCaller.sendGetRequest("http://google.com", null, null);
-            }
-        };
-        getGoogleHomePageHtml.execute(new TaskEventListener<String>() {
-            @Override
-            public void onTaskExecutionComplete(final String response) {
-                Log.i(TAG, response);
+```java
+Task<String> getGoogleHomePageHtml = new Task<String>(getContext(), mTaskMonitor) {
+    @Override
+    protected String task() throws HatcHttpException {
+        return HatcHttpCaller.sendGetRequest("http://google.com", null, null);
+    }
+};
+getGoogleHomePageHtml.execute(new TaskEventListener<String>() {
+    @Override
+    public void onTaskExecutionComplete(final String response) {
+        Log.i(TAG, response);
 
-            }
+    }
 
-            @Override
-            public void onTaskExceptionEvent(final HatcHttpException exception) {
-                Log.e(TAG, "Error happened while getting google homepage", exception);
-           
-            }
-        });
+    @Override
+    public void onTaskExceptionEvent(final HatcHttpException exception) {
+        Log.e(TAG, "Error happened while getting google homepage", exception);
+   
+    }
+});
 ```
 
 ## TaskEventListener
@@ -63,30 +63,30 @@ will be called and in case of any exception ```onTaskExceptionEvent``` will be c
 TaskMonitor is created keeping Activity and Application lifecycle of the Android. For background tasks (those should 
 run across the activities) you should create one Application level TaskMonitor. For eg
  
-```
-    public class MyhApplication extends Application {
-    
-        /**
-         * Background prepareRequest monitor
-         */
-        private static TaskMonitor mBackgroundTaskMonitor;
+```java
+public class MyhApplication extends Application {
+
+    /**
+     * Background prepareRequest monitor
+     */
+    private static TaskMonitor mBackgroundTaskMonitor;
+   
+    @Override
+    public void onCreate() {
        
-        @Override
-        public void onCreate() {
-           
-            mBackgroundTaskMonitor = new TaskMonitor();
-           
-        }
-    
-      
-        @Override
-        public void onTerminate() {
-            Log.d(TAG, "application onTerminate called");       
-            if (mBackgroundTaskMonitor != null)
-                mBackgroundTaskMonitor.cancelRunningTasks();
-            super.onTerminate();
-        }
+        mBackgroundTaskMonitor = new TaskMonitor();
+       
     }
+
+  
+    @Override
+    public void onTerminate() {
+        Log.d(TAG, "application onTerminate called");       
+        if (mBackgroundTaskMonitor != null)
+            mBackgroundTaskMonitor.cancelRunningTasks();
+        super.onTerminate();
+    }
+}
 ```
 
 Calling ```cancelRunningTasks``` makes sure that all the background tasks those were running are called off. Similar 
@@ -102,7 +102,14 @@ TaskExecutor is nothing but executor service, running all the tasks in a pool of
 This includes all the basic http related methods ready to use. This executes any request at-least thrice before 
 throwing the exception. Default TIMEOUT is 30 sec.
 
-```
+Supported methods:
+1. Post
+2. JSONPost
+3. Put
+4. Delete
+5. Get
+
+```java
 public final class HatcHttpCaller {
 
     /**
@@ -178,13 +185,14 @@ public final class HatcHttpCaller {
                                         final List<BasicNameValuePair> headers,
                                         List<BasicNameValuePair> params)
             throws HatcHttpException
+}
 ```
   
 # Future scope
 
-[] Adding NIO support.
-[] Request Pooling
-[] Connection Pooling
+* [ ] Adding NIO support.
+* [ ] Request Pooling
+* [ ] Connection Pooling
 
 
 # Developer
