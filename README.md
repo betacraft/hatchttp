@@ -32,6 +32,7 @@ is very similar to async tasks, but HatcHttp would make your code modular and ea
 7. And add following dependency
 
 ```
+compile(name: 'hatchttp', ext: 'aar')
 ```
  
 ## Architecture
