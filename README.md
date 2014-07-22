@@ -4,6 +4,36 @@ HatcHttp is a very simple and straightforward library for performing HTTP call i
 is very similar to async tasks, but HatcHttp would make your code modular and easier to maintain.
  
  
+## Features
+
+1. Asynchronous API calls, runs on a separate thread pool (ExecutorService)
+2. Supports Post, JSONPost, Put, Delete, Get (Patch and other methods are in next release)
+3. Returns the data on the same thread where execute() method is called (Using Android handlers)
+
+ 
+## How to use ?
+
+1. Clone this repo
+2. Perform gradle build
+3. Get corresponding .aar file in build folder of the Library project
+4. Create a new folder in your project (on the level of assets) aars
+5. Copy the built aar into this folder
+6. Add following as repo in your build gradle
+
+```
+ repositories {
+        ...
+        flatDir {
+            dirs 'aars'
+        }
+    }
+```
+
+7. And add following dependency
+
+```
+```
+ 
 ## Architecture
 
 ```

@@ -1,12 +1,11 @@
 package com.rainingclouds.hatchttp;
 
 import android.content.Context;
+import android.os.Handler;
 import com.rainingclouds.hatchttp.exception.HatcHttpErrorCode;
 import com.rainingclouds.hatchttp.exception.HatcHttpException;
 import com.rainingclouds.hatchttp.utils.DataConnectionUtils;
 
-
-import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -25,8 +24,7 @@ public abstract class HatcHttpTask<T> {
     /**
      * Event listeners associated with this task
      */
-    private ArrayList<TaskEventListener<T>> mTaskEventListeners = new ArrayList<TaskEventListener<T>>();
-
+    private TaskEventListener<T> mTaskEventListener;
     /**
      * Executor thread
      */
@@ -40,13 +38,13 @@ public abstract class HatcHttpTask<T> {
      */
     private TaskMonitor mTaskMonitor;
     /**
-     * Start time of the task
-     */
-    private long mStartTime;
-    /**
      * Context
      */
     protected Context mContext;
+    /**
+     * Thread to return current thread
+     */
+    private Handler mCallerThreadHandler;
 
 
     /**
@@ -72,17 +70,29 @@ public abstract class HatcHttpTask<T> {
         mExecutionRoutine = new Callable<T>() {
             @Override
             public T call() throws Exception {
-                T resp = null;
                 try {
-                    resp = task();
-                    if (!mIsCancelled.get())
-                        dispatchTaskExecutionCompleteEvent(resp);
-                } catch (HatcHttpException e) {
+                    final T resp = task();
+                    if (!mIsCancelled.get()) {
+                        mCallerThreadHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                dispatchTaskExecutionCompleteEvent(resp);
+                            }
+                        });
+                    }
+                    return resp;
+                } catch (final HatcHttpException e) {
                     e.printStackTrace();
-                    if (!mIsCancelled.get())
-                        dispatchTaskExceptionEvent(e);
+                    if (!mIsCancelled.get()) {
+                        mCallerThreadHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                dispatchTaskExceptionEvent(e);
+                            }
+                        });
+                    }
                 }
-                return resp;
+                return null;
             }
         };
     }
@@ -95,11 +105,8 @@ public abstract class HatcHttpTask<T> {
     protected void dispatchTaskExceptionEvent(HatcHttpException exception) {
         if (mTaskMonitor != null)
             mTaskMonitor.remove(this);
-        for (TaskEventListener listener : mTaskEventListeners) {
-            if (!mIsCancelled.get())
-                listener.onTaskExceptionEvent(exception);
-        }
-
+        if (!mIsCancelled.get())
+            mTaskEventListener.onTaskExceptionEvent(exception);
     }
 
     /**
@@ -110,30 +117,25 @@ public abstract class HatcHttpTask<T> {
     protected void dispatchTaskExecutionCompleteEvent(T resp) {
         if (mTaskMonitor != null)
             mTaskMonitor.remove(this);
-        for (TaskEventListener<T> listener : mTaskEventListeners) {
-            if (!mIsCancelled.get())
-                listener.onTaskExecutionComplete(resp);
-        }
+        if (!mIsCancelled.get())
+            mTaskEventListener.onTaskExecutionComplete(resp);
     }
 
-    /**
-     * Add an event listener for this task
-     *
-     * @param listener task event listener for this task
-     */
-    public void setOnTaskEventListener(final TaskEventListener<T> listener) {
-        mTaskEventListeners.add(listener);
-    }
 
     /**
      * Execute the given task
      */
     public Future<T> execute() {
+        mCallerThreadHandler = new Handler();
         if (!DataConnectionUtils.dataConnectivityAvailable(mContext)) {
-            dispatchTaskExceptionEvent(new HatcHttpException(HatcHttpErrorCode.NO_DATA_CONNECTION));
+            mCallerThreadHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    dispatchTaskExceptionEvent(new HatcHttpException(HatcHttpErrorCode.NO_DATA_CONNECTION));
+                }
+            });
             return null;
         }
-        mStartTime = System.currentTimeMillis();
         return TaskExecutor.getInstance().submitTask(mExecutionRoutine);
     }
 
@@ -142,12 +144,17 @@ public abstract class HatcHttpTask<T> {
      * Execute the given task
      */
     public Future<T> execute(final TaskEventListener<T> listener) {
-        mTaskEventListeners.add(listener);
+        mCallerThreadHandler = new Handler();
+        mTaskEventListener = listener;
         if (!DataConnectionUtils.dataConnectivityAvailable(mContext)) {
-            dispatchTaskExceptionEvent(new HatcHttpException(HatcHttpErrorCode.NO_DATA_CONNECTION));
+            mCallerThreadHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    dispatchTaskExceptionEvent(new HatcHttpException(HatcHttpErrorCode.NO_DATA_CONNECTION));
+                }
+            });
             return null;
         }
-        mStartTime = System.currentTimeMillis();
         return TaskExecutor.getInstance().submitTask(mExecutionRoutine);
     }
 
