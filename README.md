@@ -1,0 +1,205 @@
+# HatcHttp 
+
+HatcHttp is a very simple and straightforward library for performing HTTP call inside your Android app. Architecture 
+is very similar to async tasks, but HatcHttp would make your code modular and easier to maintain.
+ 
+ 
+## Architecture
+
+```
+
+ +-------------+      +------------+      +--------------+
+ | TaskEvent   <------+            +      |              |
+ |    Listener |      |  Task      +------> Task Executor|
+ |             <------+            <------+              |
+ +-------------+      +------------+      +----------+---+
+                                                     |
+                                                     |
+                      +-------------+                |
+                      |             |                |
+                      | TaskMonitor +----------------+
+                      |             |
+                      +-------------+
+```
+
+## Components
+
+### Task
+
+Task is the core component of this library. Task is an abstract class with ```task()``` as abstract method. This 
+class is templatized with the return type of the ```task()``` method. All the logic related with this task is put in 
+this method by the child task. For example if you want to send a get call to google.com then you would extend Task as
+ following.
+ 
+```
+        Task<String> getGoogleHomePageHtml = new Task<String>(getContext(), mTaskMonitor) {
+            @Override
+            protected String task() throws HatcHttpException {
+                return HatcHttpCaller.sendGetRequest("http://google.com", null, null);
+            }
+        };
+        getGoogleHomePageHtml.execute(new TaskEventListener<String>() {
+            @Override
+            public void onTaskExecutionComplete(final String response) {
+                Log.i(TAG, response);
+
+            }
+
+            @Override
+            public void onTaskExceptionEvent(final HatcHttpException exception) {
+                Log.e(TAG, "Error happened while getting google homepage", exception);
+           
+            }
+        });
+```
+
+## TaskEventListener
+
+TaskEventListener gives you status of your task asynchronously. If success then ```onTaskExecutionComplete``` callback 
+will be called and in case of any exception ```onTaskExceptionEvent``` will be called with wrapped exception.
+
+## TaskMonitor 
+
+TaskMonitor is created keeping Activity and Application lifecycle of the Android. For background tasks (those should 
+run across the activities) you should create one Application level TaskMonitor. For eg
+ 
+```
+    public class MyhApplication extends Application {
+    
+        /**
+         * Background prepareRequest monitor
+         */
+        private static TaskMonitor mBackgroundTaskMonitor;
+       
+        @Override
+        public void onCreate() {
+           
+            mBackgroundTaskMonitor = new TaskMonitor();
+           
+        }
+    
+      
+        @Override
+        public void onTerminate() {
+            Log.d(TAG, "application onTerminate called");       
+            if (mBackgroundTaskMonitor != null)
+                mBackgroundTaskMonitor.cancelRunningTasks();
+            super.onTerminate();
+        }
+    }
+```
+
+Calling ```cancelRunningTasks``` makes sure that all the background tasks those were running are called off. Similar 
+is the case of Activity level and Fragment level task. You should instantiate TaskMonitor in onCreate method and 
+cancel all running task at the time of onPause/onDestroy depending upon the nature of your task.
+
+## TaskExecutor
+
+TaskExecutor is nothing but executor service, running all the tasks in a pool of separate threads.
+
+## HatcHttpCaller
+
+This includes all the basic http related methods ready to use. This executes any request at-least thrice before 
+throwing the exception. Default TIMEOUT is 30 sec.
+
+```
+public final class HatcHttpCaller {
+
+    /**
+     * Method to send a post request to the passed URL
+     *
+     * @param url    url to which post request has to be made
+     * @param params params
+     * @return response given by server
+     * @throws com.rainingclouds.hatchttp.exception.HatcHttpException
+     */
+    public static String sendPostRequest(final String url,
+                                         final List<BasicNameValuePair> headers,
+                                         List<BasicNameValuePair> params)
+            throws HatcHttpException
+    /**
+     * Method to send a put request to the passed URL
+     *
+     * @param url    url to which post request has to be made
+     * @param params params
+     * @return response given by server
+     * @throws com.rainingclouds.hatchttp.exception.HatcHttpException
+     */
+    public static String sendPutRequest(final String url,
+                                        final List<BasicNameValuePair> headers,
+                                        List<BasicNameValuePair> params)
+            throws HatcHttpException
+    /**
+     * Method to send a Delete request to the passed URL
+     *
+     * @param url    url to which post request has to be made
+     * @param params params
+     * @return response given by server
+     * @throws com.rainingclouds.hatchttp.exception.HatcHttpException
+     */
+    public static String sendDeleteRequest(final String url,
+                                           final List<BasicNameValuePair> headers,
+                                           List<BasicNameValuePair> params)
+            throws HatcHttpException
+    /**
+     * Method to send a put request to the passed URL
+     *
+     * @param url url to which post request has to be made
+     * @return response given by server
+     * @throws com.rainingclouds.hatchttp.exception.HatcHttpException
+     */
+    public static String sendPutRequest(final String url,
+                                        List<BasicNameValuePair> headers,
+                                        JSONObject json)
+            throws HatcHttpException
+    /**
+     * Method to send a post request to the passed URL
+     *
+     * @param url url to which post request has to be made
+     * @return response given by server
+     * @throws com.rainingclouds.hatchttp.exception.HatcHttpException
+     */
+    public static String sendJSONPostRequest(final String url,
+                                             List<BasicNameValuePair> headers,
+                                             final JSONObject json)
+            throws HatcHttpException 
+
+    /**
+     * Method to send get request to the given URL with given headers and
+     * parameters
+     *
+     * @param url     url to which get request has to be made
+     * @param headers headers to be sent
+     * @param params  params to be sent
+     * @return response given by server
+     * @throws com.rainingclouds.hatchttp.exception.HatcHttpException
+     */
+    public static String sendGetRequest(final String url,
+                                        final List<BasicNameValuePair> headers,
+                                        List<BasicNameValuePair> params)
+            throws HatcHttpException
+```
+  
+# Future scope
+
+[] Adding NIO support.
+[] Request Pooling
+[] Connection Pooling
+
+
+# Developer
+
+Akshay Deo (akshay@rainingclouds.com)
+RainingClouds Technologies 
+
+# Licence 
+
+The MIT License (MIT)
+
+Copyright (c) 2014 Akshay Deo
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
