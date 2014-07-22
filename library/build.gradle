@@ -5,8 +5,6 @@ android {
     compileSdkVersion 20
     buildToolsVersion "20.0.0"
 
-    archivesBaseName = "yourname"
-
     defaultConfig {
         applicationId "com.rainingclouds.hatchttp"
         minSdkVersion 9
