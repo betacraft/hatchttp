@@ -10,6 +10,18 @@ is very similar to async tasks, but HatcHttp would make your code modular and ea
 2. Supports Post, JSONPost, Put, Delete, Get (Patch and other methods are in next release)
 3. Returns the data on the same thread where execute() method is called (Using Android handlers)
 
+## What is different ?
+
+Most of the available libraries go with a basic Http library approach where you get helper methods to make different 
+HTTP calls. So we end up writing some wrappers over these libraries so as to avoid redundant code. But HatcHttp 
+approach is more like an generic abstract class which can return anything and entire logic is at one place. For 
+example if you want to implement an API call that returns user information then 
+
+1. Create a class that extends HatcHttpTask<User> name GetUserInfoTask
+2. Implement task() method using HatcHttpCaller 
+3. And parse the response returned using your favorite JSON parser
+
+And you are ready to use this method everywhere. No extra architecture, wrappers are required.
  
 ## How to use ?
 
@@ -220,6 +232,7 @@ public final class HatcHttpCaller {
   
 # Future scope
 
+* [ ] Add inbuilt JSON parser (for now we can use GSON or Jackson)
 * [ ] Adding NIO support.
 * [ ] Request Pooling
 * [ ] Connection Pooling
