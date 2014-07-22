@@ -9,7 +9,7 @@ import java.util.concurrent.Future;
  * Task executor executes submitted tasks
  * User: akshay
  */
-public final class TaskExecutor {
+final class TaskExecutor {
     /**
      * TAG for logging
      */

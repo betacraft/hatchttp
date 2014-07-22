@@ -21,13 +21,13 @@ public final class TaskMonitor {
     /**
      * List of tasks that are currently getting executed
      */
-    private ConcurrentLinkedQueue<Task> mTasksExecuting;
+    private ConcurrentLinkedQueue<HatcHttpTask> mTasksExecuting;
 
     /**
      * Constructor
      */
     public TaskMonitor() {
-        mTasksExecuting = new ConcurrentLinkedQueue<Task>();
+        mTasksExecuting = new ConcurrentLinkedQueue<HatcHttpTask>();
     }
 
     /**
@@ -35,7 +35,7 @@ public final class TaskMonitor {
      *
      * @param task task to be added
      */
-    void add(final Task task) {
+    void add(final HatcHttpTask task) {
         mTasksExecuting.add(task);
     }
 
@@ -44,7 +44,7 @@ public final class TaskMonitor {
      *
      * @param task task to be removed
      */
-    void remove(final Task task) {
+    void remove(final HatcHttpTask task) {
         mTasksExecuting.remove(task);
     }
 
@@ -54,7 +54,7 @@ public final class TaskMonitor {
      */
     public void cancelRunningTasks() {
         mIsClosed.set(true);
-        for (Task task : mTasksExecuting) {
+        for (HatcHttpTask task : mTasksExecuting) {
             task.cancel();
         }
     }

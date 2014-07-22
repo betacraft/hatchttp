@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @param <T>
  */
 
-public abstract class Task<T> {
+public abstract class HatcHttpTask<T> {
     /**
      * Logger
      */
@@ -63,7 +63,7 @@ public abstract class Task<T> {
      * @param context     context in which this task is running
      * @param taskMonitor task monitor allocated for this task see @link{TaskMonitor}
      */
-    public Task(final Context context, final TaskMonitor taskMonitor) {
+    public HatcHttpTask(final Context context, final TaskMonitor taskMonitor) {
         //Log.d(TAG, "executing");
         mContext = context;
         mTaskMonitor = taskMonitor;

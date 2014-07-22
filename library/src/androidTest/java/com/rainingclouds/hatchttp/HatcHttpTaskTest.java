@@ -6,7 +6,7 @@ import com.rainingclouds.hatchttp.exception.HatcHttpException;
 import com.rainingclouds.hatchttp.utils.HatcHttpCaller;
 
 
-public class TaskTest extends AndroidTestCase {
+public class HatcHttpTaskTest extends AndroidTestCase {
     private static final String TAG = "###TaskTest###";
     private TaskMonitor mTaskMonitor;
 
@@ -16,7 +16,7 @@ public class TaskTest extends AndroidTestCase {
     }
 
     public void testGetMethod() throws Exception {
-        Task<String> getGoogleHomePageHtml = new Task<String>(getContext(), mTaskMonitor) {
+        HatcHttpTask<String> getGoogleHomePageHtml = new HatcHttpTask<String>(getContext(), mTaskMonitor) {
             @Override
             protected String task() throws HatcHttpException {
                 return HatcHttpCaller.sendGetRequest("http://google.com", null, null);
