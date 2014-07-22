@@ -103,6 +103,7 @@ This includes all the basic http related methods ready to use. This executes any
 throwing the exception. Default TIMEOUT is 30 sec.
 
 Supported methods:
+
 1. Post
 2. JSONPost
 3. Put
