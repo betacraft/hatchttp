@@ -19,7 +19,6 @@ is very similar to async tasks, but HatcHttp would make your code modular and ea
 4. Create a new folder in your project (on the level of assets) aars
 5. Copy the built aar into this folder
 6. Add following as repo in your build gradle
-
 ```
  repositories {
         ...
@@ -28,7 +27,6 @@ is very similar to async tasks, but HatcHttp would make your code modular and ea
         }
     }
 ```
-
 7. And add following dependency
 
 ```
