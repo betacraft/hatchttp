@@ -94,12 +94,12 @@ getGoogleHomePageHtml.execute(new TaskEventListener<String>() {
 });
 ```
 
-## TaskEventListener
+### TaskEventListener
 
 TaskEventListener gives you status of your task asynchronously. If success then ```onTaskExecutionComplete``` callback 
 will be called and in case of any exception ```onTaskExceptionEvent``` will be called with wrapped exception.
 
-## TaskMonitor 
+### TaskMonitor 
 
 TaskMonitor is created keeping Activity and Application lifecycle of the Android. For background tasks (those should 
 run across the activities) you should create one Application level TaskMonitor. For eg
@@ -134,11 +134,11 @@ Calling ```cancelRunningTasks``` makes sure that all the background tasks those 
 is the case of Activity level and Fragment level task. You should instantiate TaskMonitor in onCreate method and 
 cancel all running task at the time of onPause/onDestroy depending upon the nature of your task.
 
-## TaskExecutor
+### TaskExecutor
 
 TaskExecutor is nothing but executor service, running all the tasks in a pool of separate threads.
 
-## HatcHttpCaller
+### HatcHttpCaller
 
 This includes all the basic http related methods ready to use. This executes any request at-least thrice before 
 throwing the exception. Default TIMEOUT is 30 sec.
