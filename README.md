@@ -40,11 +40,10 @@ And you are ready to use this method everywhere. No extra architecture, wrappers
     }
 ```
 And add following dependency
-
 ```
 compile(name: 'hatchttp', ext: 'aar')
 ```
-7. Add following permissions in your AndroidManifest.xml
+Add following permissions in your AndroidManifest.xml
 ```
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
