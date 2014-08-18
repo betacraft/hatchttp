@@ -34,7 +34,7 @@ public final class HatcHttpAsyncCaller extends HatcHttpCaller{
      * Factory method
      * @return
      */
-    public HatcHttpAsyncCaller getInstance(){
+    public static HatcHttpAsyncCaller getInstance(){
         return new HatcHttpAsyncCaller();
     }
 
@@ -42,7 +42,7 @@ public final class HatcHttpAsyncCaller extends HatcHttpCaller{
      * Factory methods
      * @return
      */
-    public HatcHttpAsyncCaller getInstance(final TaskMonitor mTaskMonitor) {
+    public static HatcHttpAsyncCaller getInstance(final TaskMonitor mTaskMonitor) {
         return new HatcHttpAsyncCaller();
     }
 
