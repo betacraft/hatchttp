@@ -38,7 +38,7 @@ And you are ready to use this method everywhere. No extra architecture, wrappers
 If you don't want to add any overhead of writing separate tasks and want to execute one time synchronous http call, 
 just use HatcHttpCaller and you are done.
 
-```
+```java
 HatcHttpCaller.getInstance().sendPostRequest(url,header,params)
 ```
 
@@ -47,7 +47,7 @@ HatcHttpCaller.getInstance().sendPostRequest(url,header,params)
 And instead of synchronous call, you want to execute asynchronous call, instead of HatcHttpCaller use 
 HatcHttpAsyncCaller. 
 
-```
+```java
 HatcHttpAsyncCaller.getInstance().sendPostRequest(url,header,params)
 ```
 
@@ -60,7 +60,7 @@ HatcHttpAsyncCaller.getInstance().sendPostRequest(url,header,params)
 4. Create a new folder in your project (on the level of assets) aars
 5. Copy the built aar into this folder
 6. Add following as repo in your build gradle
-```
+```gradle
  repositories {
         ...
         flatDir {
@@ -69,11 +69,11 @@ HatcHttpAsyncCaller.getInstance().sendPostRequest(url,header,params)
     }
 ```
 And add following dependency
-```
+```gradle
 compile(name: 'hatchttp', ext: 'aar')
 ```
 Add following permissions in your AndroidManifest.xml
-```
+```xml
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 ```
