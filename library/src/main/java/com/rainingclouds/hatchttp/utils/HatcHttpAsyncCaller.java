@@ -1,5 +1,6 @@
 package com.rainingclouds.hatchttp.utils;
 
+import com.rainingclouds.hatchttp.TaskMonitor;
 import com.rainingclouds.hatchttp.exception.HatcHttpException;
 
 import org.apache.http.message.BasicNameValuePair;
@@ -24,12 +25,24 @@ public final class HatcHttpAsyncCaller extends HatcHttpCaller{
      * Executor
      */
     private ExecutorService mExecutor = Executors.newFixedThreadPool(4);
+    /**
+     * Task monitor associated with this called
+     */
+    private TaskMonitor mTaskMonitor;
+
+    /**
+     * Factory method
+     * @return
+     */
+    public HatcHttpAsyncCaller getInstance(){
+        return new HatcHttpAsyncCaller();
+    }
 
     /**
      * Factory methods
      * @return
      */
-    public HatcHttpAsyncCaller getInstance() {
+    public HatcHttpAsyncCaller getInstance(final TaskMonitor mTaskMonitor) {
         return new HatcHttpAsyncCaller();
     }
 
@@ -67,7 +80,7 @@ public final class HatcHttpAsyncCaller extends HatcHttpCaller{
         return mExecutor.submit(new Callable<String>() {
             @Override
             public String call() throws HatcHttpException {
-                return sendPutRequest(url,headers,params);
+                return sendPutRequest(url, headers, params);
             }
         });
     }
