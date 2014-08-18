@@ -31,10 +31,10 @@ import java.util.List;
  * A static to help to use different REST APIs
  *
  * @author Akshay Deo
- * @version 0.1
+ * @version 0.2
  * @since 0.1
  */
-public final class HatcHttpCaller {
+public class HatcHttpCaller {
 
     /**
      * Debug tag to be used in Log
@@ -43,11 +43,36 @@ public final class HatcHttpCaller {
     /**
      * Connection timeout time is 30 seconds
      */
-    private static final int CONNECTION_TIMEOUT_TIME = 30000;
+    private static int CONNECTION_TIMEOUT_TIME = 30000;
     /**
      * Max connection retries
      */
-    private static final int MAX_CONNECTION_RETRIES = 3;
+    private static int MAX_CONNECTION_RETRIES = 3;
+
+
+    /**
+     * Factory methods
+     * @return
+     */
+    public HatcHttpAsyncCaller getInstance(){
+        return new HatcHttpAsyncCaller();
+    }
+
+    /**
+     * Setter for connection retries attempts
+     * @param maxRetries
+     */
+    public void setMaxConnectionRetries(final int maxRetries){
+        MAX_CONNECTION_RETRIES = maxRetries;
+    }
+
+    /**
+     * Setter for connection timeout
+     * @param timeout
+     */
+    public void setConnectionTimeoutTime(final int timeout){
+        CONNECTION_TIMEOUT_TIME = timeout;
+    }
 
     /**
      * Execute request method
@@ -56,7 +81,7 @@ public final class HatcHttpCaller {
      * @return
      * @throws com.rainingclouds.hatchttp.exception.HatcHttpException
      */
-    private static HttpResponse executeRequest(final org.apache.http.client.methods.HttpRequestBase httpRequest)
+    private HttpResponse executeRequest(final org.apache.http.client.methods.HttpRequestBase httpRequest)
             throws HatcHttpException {
         int retryCount = 0;
         HttpParams httpParameters = new BasicHttpParams();
@@ -86,7 +111,7 @@ public final class HatcHttpCaller {
      * @return response given by server
      * @throws com.rainingclouds.hatchttp.exception.HatcHttpException
      */
-    public static String sendPostRequest(final String url,
+    public String sendPostRequest(final String url,
                                          final List<BasicNameValuePair> headers,
                                          List<BasicNameValuePair> params)
             throws HatcHttpException {
@@ -129,7 +154,7 @@ public final class HatcHttpCaller {
      * @return response given by server
      * @throws com.rainingclouds.hatchttp.exception.HatcHttpException
      */
-    public static String sendPutRequest(final String url,
+    public String sendPutRequest(final String url,
                                         final List<BasicNameValuePair> headers,
                                         List<BasicNameValuePair> params)
             throws HatcHttpException {
@@ -180,7 +205,7 @@ public final class HatcHttpCaller {
      * @return response given by server
      * @throws com.rainingclouds.hatchttp.exception.HatcHttpException
      */
-    public static String sendDeleteRequest(final String url,
+    public String sendDeleteRequest(final String url,
                                            final List<BasicNameValuePair> headers,
                                            List<BasicNameValuePair> params)
             throws HatcHttpException {
@@ -229,7 +254,7 @@ public final class HatcHttpCaller {
      * @return response given by server
      * @throws com.rainingclouds.hatchttp.exception.HatcHttpException
      */
-    public static String sendPutRequest(final String url,
+    public String sendPutRequest(final String url,
                                         List<BasicNameValuePair> headers,
                                         JSONObject json)
             throws HatcHttpException {
@@ -278,7 +303,7 @@ public final class HatcHttpCaller {
      * @return response given by server
      * @throws com.rainingclouds.hatchttp.exception.HatcHttpException
      */
-    public static String sendJSONPostRequest(final String url,
+    public String sendJSONPostRequest(final String url,
                                              List<BasicNameValuePair> headers,
                                              final JSONObject json)
             throws HatcHttpException {
@@ -328,7 +353,7 @@ public final class HatcHttpCaller {
      * @return response given by server
      * @throws com.rainingclouds.hatchttp.exception.HatcHttpException
      */
-    public static String sendGetRequest(final String url,
+    public String sendGetRequest(final String url,
                                         final List<BasicNameValuePair> headers,
                                         List<BasicNameValuePair> params)
             throws HatcHttpException {
@@ -370,4 +395,5 @@ public final class HatcHttpCaller {
         }
         throw new HatcHttpException(HatcHttpErrorCode.SOCKET_EXCEPTION);
     }
+
 }

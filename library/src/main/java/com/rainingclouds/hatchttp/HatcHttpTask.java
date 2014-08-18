@@ -69,24 +69,12 @@ public abstract class HatcHttpTask<T> {
                 try {
                     final T resp = task();
                     if (!mIsCancelled.get()) {
-//                        mCallerThreadHandler.post(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                dispatchTaskExecutionCompleteEvent(resp);
-//                            }
-//                        });
                         dispatchTaskExecutionCompleteEvent(resp);
                     }
                     return resp;
                 } catch (final HatcHttpException e) {
                     e.printStackTrace();
                     if (!mIsCancelled.get()) {
-//                        mCallerThreadHandler.post(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                dispatchTaskExceptionEvent(e);
-//                            }
-//                        });
                         dispatchTaskExceptionEvent(e);
                     }
                 }
@@ -140,12 +128,6 @@ public abstract class HatcHttpTask<T> {
 
         mTaskEventListener = listener;
         if (!DataConnectionUtils.dataConnectivityAvailable(mContext)) {
-//            mCallerThreadHandler.post(new Runnable() {
-//                @Override
-//                public void run() {
-//                    dispatchTaskExceptionEvent(new HatcHttpException(HatcHttpErrorCode.NO_DATA_CONNECTION));
-//                }
-//            });
             dispatchTaskExceptionEvent(new HatcHttpException(HatcHttpErrorCode.NO_DATA_CONNECTION));
             return null;
         }

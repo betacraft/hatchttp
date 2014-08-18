@@ -3,14 +3,22 @@
 HatcHttp is a very simple and straightforward library for performing HTTP call inside your Android app. Architecture 
 is very similar to async tasks, but HatcHttp would make your code modular and easier to maintain.
  
- 
 ## Features
 
 1. Asynchronous API calls, runs on a separate thread pool (ExecutorService)
 2. Supports Post, JSONPost, Put, Delete, Get (Patch and other methods are in next release)
-3. Returns the data on the same thread where execute() method is called (Using Android handlers)
 
 ## What is different ?
+
+### Easier way to cancel all running tasks : TaskMonitor
+
+TaskMonitor does a very simple job, but does avoid a bit of headache of killing all futures of the running tasks when
+ an activity goes in background. If you don't kill running tasks, then on return of the async http call, 
+ it will try to execute some UI related functionality on the components which are no more available and results in 
+ exception. Task monitor is brought in for avoiding the same thing. You will have to push TaskMonitor for each of the
+  async call, or Task and add TaskMonitor.cancelRunningTasks() in onPause of the activity, and you are done !! 
+
+### Better way to avoid redundancy 
 
 Most of the available libraries go with a basic Http library approach where you get helper methods to make different 
 HTTP calls. So we end up writing some wrappers over these libraries so as to avoid redundant code. But HatcHttp 
@@ -22,6 +30,27 @@ example if you want to implement an API call that returns user information then
 3. And parse the response returned using your favorite JSON parser
 
 And you are ready to use this method everywhere. No extra architecture, wrappers are required.
+
+### Different modes of use
+
+#### Make one time synchronous http call
+
+If you don't want to add any overhead of writing separate tasks and want to execute one time synchronous http call, 
+just use HatcHttpCaller and you are done.
+
+```
+HatcHttpCaller.getInstance().sendPostRequest(url,header,params)
+```
+
+#### Make one time asynchronous http call
+
+And instead of synchronous call, you want to execute asynchronous call, instead of HatcHttpCaller use 
+HatcHttpAsyncCaller. 
+
+```
+HatcHttpAsyncCaller.getInstance().sendPostRequest(url,header,params)
+```
+
  
 ## How to use ?
 
@@ -246,7 +275,7 @@ public final class HatcHttpCaller {
 # Developer
 
 Akshay Deo (akshay@rainingclouds.com)
-RainingClouds Technologies 
+RainingClouds Technologies Pvt Ltd
 
 # Licence 
 
