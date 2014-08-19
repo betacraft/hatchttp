@@ -95,9 +95,9 @@ public class HatcHttpCaller {
                 response = httpClient.execute(httpRequest);
                 return response;
             } catch (ClientProtocolException e) {
-                Log.i(TAG, "Exception happened while contacting to server", e);
+                Log.e(TAG, "Exception happened while contacting to server", e);
             } catch (IOException e) {
-                Log.i(TAG, "Exception happened while contacting to server", e);
+                Log.e(TAG, "Exception happened while contacting to server", e);
             }
         } while (++retryCount < MAX_CONNECTION_RETRIES);
         throw new HatcHttpException(HatcHttpErrorCode.MAX_RETRIES_FOR_CONTACTING_SERVER);
@@ -134,16 +134,16 @@ public class HatcHttpCaller {
                 throw new HatcHttpException(HatcHttpErrorCode.REQUEST_TIMEOUT);
             }
         } catch (UnsupportedEncodingException e) {
-            Log.i(TAG, "Error while executing post request", e);
+            Log.e(TAG, "Error while executing post request", e);
             throw new HatcHttpException(HatcHttpErrorCode.UNSUPPORTED_ENCODING, e);
         } catch (ClientProtocolException e) {
-            Log.i(TAG, "Error while executing post request", e);
+            Log.e(TAG, "Error while executing post request", e);
             throw new HatcHttpException(HatcHttpErrorCode.CLIENT_PROTOCOL_EXCEPTION, e);
         } catch (IOException e) {
-            Log.i(TAG, "Error while executing post request", e);
+            Log.e(TAG, "Error while executing post request", e);
             throw new HatcHttpException(HatcHttpErrorCode.SOCKET_EXCEPTION, e);
         }
-        throw new HatcHttpException(HatcHttpErrorCode.SOCKET_EXCEPTION);
+        throw new HatcHttpException(status.getStatusCode(),status.getReasonPhrase());
     }
 
     /**
@@ -185,16 +185,16 @@ public class HatcHttpCaller {
                 throw new HatcHttpException(HatcHttpErrorCode.REQUEST_TIMEOUT);
             }
         } catch (UnsupportedEncodingException e) {
-            Log.i(TAG, "Error while executing put request", e);
+            Log.e(TAG, "Error while executing put request", e);
             throw new HatcHttpException(HatcHttpErrorCode.UNSUPPORTED_ENCODING, e);
         } catch (ClientProtocolException e) {
-            Log.i(TAG, "Error while executing put request", e);
+            Log.e(TAG, "Error while executing put request", e);
             throw new HatcHttpException(HatcHttpErrorCode.CLIENT_PROTOCOL_EXCEPTION, e);
         } catch (IOException e) {
-            Log.i(TAG, "Error while executing put request", e);
+            Log.e(TAG, "Error while executing put request", e);
             throw new HatcHttpException(HatcHttpErrorCode.SOCKET_EXCEPTION, e);
         }
-        throw new HatcHttpException(HatcHttpErrorCode.SOCKET_EXCEPTION);
+        throw new HatcHttpException(status.getStatusCode(),status.getReasonPhrase());
     }
 
     /**
@@ -234,16 +234,16 @@ public class HatcHttpCaller {
                 throw new HatcHttpException(HatcHttpErrorCode.REQUEST_TIMEOUT);
             }
         } catch (UnsupportedEncodingException e) {
-            Log.i(TAG, "Error while executing delete request", e);
+            Log.e(TAG, "Error while executing delete request", e);
             throw new HatcHttpException(HatcHttpErrorCode.UNSUPPORTED_ENCODING, e);
         } catch (ClientProtocolException e) {
-            Log.i(TAG, "Error while executing delete request", e);
+            Log.e(TAG, "Error while executing delete request", e);
             throw new HatcHttpException(HatcHttpErrorCode.CLIENT_PROTOCOL_EXCEPTION, e);
         } catch (IOException e) {
-            Log.i(TAG, "Error while executing delete request", e);
+            Log.e(TAG, "Error while executing delete request", e);
             throw new HatcHttpException(HatcHttpErrorCode.SOCKET_EXCEPTION, e);
         }
-        throw new HatcHttpException(HatcHttpErrorCode.SOCKET_EXCEPTION);
+        throw new HatcHttpException(status.getStatusCode(),status.getReasonPhrase());
     }
 
 
@@ -283,16 +283,16 @@ public class HatcHttpCaller {
                 throw new HatcHttpException(HatcHttpErrorCode.REQUEST_TIMEOUT);
             }
         } catch (UnsupportedEncodingException e) {
-            Log.i(TAG, "Error while executing put request", e);
+            Log.e(TAG, "Error while executing put request", e);
             throw new HatcHttpException(HatcHttpErrorCode.UNSUPPORTED_ENCODING, e);
         } catch (ClientProtocolException e) {
-            Log.i(TAG, "Error while executing put request", e);
+            Log.e(TAG, "Error while executing put request", e);
             throw new HatcHttpException(HatcHttpErrorCode.CLIENT_PROTOCOL_EXCEPTION, e);
         } catch (IOException e) {
-            Log.i(TAG, "Error while executing put request", e);
+            Log.e(TAG, "Error while executing put request", e);
             throw new HatcHttpException(HatcHttpErrorCode.SOCKET_EXCEPTION, e);
         }
-        throw new HatcHttpException(HatcHttpErrorCode.SOCKET_EXCEPTION);
+        throw new HatcHttpException(status.getStatusCode(),status.getReasonPhrase());
     }
 
 
@@ -330,16 +330,16 @@ public class HatcHttpCaller {
                 throw new HatcHttpException(HatcHttpErrorCode.REQUEST_TIMEOUT);
             }
         } catch (UnsupportedEncodingException e) {
-            Log.i(TAG, "Error while executing post request", e);
+            Log.e(TAG, "Error while executing post request", e);
             throw new HatcHttpException(HatcHttpErrorCode.UNSUPPORTED_ENCODING, e);
         } catch (ClientProtocolException e) {
-            Log.i(TAG, "Error while executing post request", e);
+            Log.e(TAG, "Error while executing post request", e);
             throw new HatcHttpException(HatcHttpErrorCode.CLIENT_PROTOCOL_EXCEPTION, e);
         } catch (IOException e) {
-            Log.i(TAG, "Error while executing post request", e);
+            Log.e(TAG, "Error while executing post request", e);
             throw new HatcHttpException(HatcHttpErrorCode.SOCKET_EXCEPTION, e);
         }
-        throw new HatcHttpException(HatcHttpErrorCode.SOCKET_EXCEPTION);
+        throw new HatcHttpException(status.getStatusCode(),status.getReasonPhrase());
     }
 
 
@@ -384,16 +384,16 @@ public class HatcHttpCaller {
                 throw new HatcHttpException(HatcHttpErrorCode.REQUEST_TIMEOUT);
             }
         } catch (UnsupportedEncodingException e) {
-            Log.i(TAG, "Error while executing get request", e);
+            Log.e(TAG, "Error while executing get request", e);
             throw new HatcHttpException(HatcHttpErrorCode.UNSUPPORTED_ENCODING, e);
         } catch (ClientProtocolException e) {
-            Log.i(TAG, "Error while executing get request", e);
+            Log.e(TAG, "Error while executing get request", e);
             throw new HatcHttpException(HatcHttpErrorCode.CLIENT_PROTOCOL_EXCEPTION, e);
         } catch (IOException e) {
-            Log.i(TAG, "Error while executing get request", e);
+            Log.e(TAG, "Error while executing get request", e);
             throw new HatcHttpException(HatcHttpErrorCode.SOCKET_EXCEPTION, e);
         }
-        throw new HatcHttpException(HatcHttpErrorCode.SOCKET_EXCEPTION);
+        throw new HatcHttpException(status.getStatusCode(),status.getReasonPhrase());
     }
 
 }

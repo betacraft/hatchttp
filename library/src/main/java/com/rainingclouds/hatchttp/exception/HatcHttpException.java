@@ -17,6 +17,14 @@ public final class HatcHttpException extends Exception {
      * Underlying exception
      */
     private Throwable mThrowable;
+    /**
+     * HTTP Status code
+     */
+    private int mHttpStatusCode;
+    /**
+     * HTTP Response
+     */
+    private String mHttpResponse;
 
     /**
      * Getter for error code associated with this exception
@@ -25,6 +33,15 @@ public final class HatcHttpException extends Exception {
      */
     public HatcHttpErrorCode getErrorCode() {
         return mErrorCode;
+    }
+
+
+    public int getHttpStatusCode(){
+        return mHttpStatusCode;
+    }
+
+    public String getHttpResponse(){
+        return mHttpResponse;
     }
 
     /**
@@ -43,6 +60,17 @@ public final class HatcHttpException extends Exception {
      */
     public HatcHttpException(final HatcHttpErrorCode errorCode) {
         mErrorCode = errorCode;
+    }
+
+
+    /**
+     *
+     * @param httpStatus
+     */
+    public HatcHttpException(final int httpStatus, final String httpResponse){
+        mErrorCode = HatcHttpErrorCode.WEB_APP_EXCEPTION;
+        mHttpStatusCode = httpStatus;
+        mHttpResponse = httpResponse;
     }
 
     /**
