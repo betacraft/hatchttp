@@ -1,7 +1,7 @@
 package com.rainingclouds.hatchttp;
 
 import android.content.Context;
-import android.os.Handler;
+
 import com.rainingclouds.hatchttp.exception.HatcHttpErrorCode;
 import com.rainingclouds.hatchttp.exception.HatcHttpException;
 import com.rainingclouds.hatchttp.utils.DataConnectionUtils;

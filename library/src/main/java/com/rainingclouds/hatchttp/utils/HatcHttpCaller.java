@@ -179,7 +179,6 @@ public class HatcHttpCaller {
                 for (BasicNameValuePair header : headers)
                     httpPost.setHeader(header.getName(), header.getValue());
             }
-            httpPost.setHeader("invited", "true");
             //Log.d(TAG, httpPost.getURI().toString());
             long callStartTime = System.currentTimeMillis();
             HttpResponse response = executeRequest(httpPost);
@@ -309,9 +308,7 @@ public class HatcHttpCaller {
      * @return response given by server
      * @throws com.rainingclouds.hatchttp.exception.HatcHttpException
      */
-    public String sendJSONPostRequest(final String url,
-                                             List<BasicNameValuePair> headers,
-                                             final JSONObject json)
+    public String sendJSONPostRequest(final String url, List<BasicNameValuePair> headers, final JSONObject json)
             throws HatcHttpException {
         // Create http post request
         HttpPost httpPost = new HttpPost(url);
@@ -319,14 +316,12 @@ public class HatcHttpCaller {
         if (headers == null) {
             headers = new ArrayList<BasicNameValuePair>();
         }
-        headers.add(new BasicNameValuePair("Accept", "application/json"));
-        headers.add(new BasicNameValuePair("Content-type", "application/json"));
-        headers.add(new BasicNameValuePair("invited", "true"));
+        headers.add(new BasicNameValuePair("Content-Type", "application/json"));
         try {
             for (BasicNameValuePair header : headers)
                 httpPost.setHeader(header.getName(), header.getValue());
             httpPost.setEntity(new StringEntity(json.toString()));
-            //Log.d(TAG, httpPost.getURI().toString());
+            Log.d(TAG, httpPost.getURI().toString());
             HttpResponse response = executeRequest(httpPost);
             status = response.getStatusLine();
             if (status.getStatusCode() == HttpStatus.SC_OK)
