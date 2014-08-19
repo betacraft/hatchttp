@@ -83,6 +83,7 @@ public class HatcHttpCaller {
      */
     private HttpResponse executeRequest(final org.apache.http.client.methods.HttpRequestBase httpRequest)
             throws HatcHttpException {
+        Exception underlyingException;
         int retryCount = 0;
         HttpParams httpParameters = new BasicHttpParams();
         HttpConnectionParams.setConnectionTimeout(httpParameters, CONNECTION_TIMEOUT_TIME);
@@ -96,11 +97,16 @@ public class HatcHttpCaller {
                 return response;
             } catch (ClientProtocolException e) {
                 Log.e(TAG, "Exception happened while contacting to server", e);
+                underlyingException = e;
             } catch (IOException e) {
                 Log.e(TAG, "Exception happened while contacting to server", e);
+                underlyingException = e;
+            } catch (Exception e){
+                Log.e(TAG, "Exception happened while connecting to the server",e);
+                underlyingException =e ;
             }
         } while (++retryCount < MAX_CONNECTION_RETRIES);
-        throw new HatcHttpException(HatcHttpErrorCode.MAX_RETRIES_FOR_CONTACTING_SERVER);
+        throw new HatcHttpException(HatcHttpErrorCode.MAX_RETRIES_FOR_CONTACTING_SERVER,underlyingException);
     }
 
     /**
@@ -321,7 +327,6 @@ public class HatcHttpCaller {
                 httpPost.setHeader(header.getName(), header.getValue());
             httpPost.setEntity(new StringEntity(json.toString()));
             //Log.d(TAG, httpPost.getURI().toString());
-            long callStartTime = System.currentTimeMillis();
             HttpResponse response = executeRequest(httpPost);
             status = response.getStatusLine();
             if (status.getStatusCode() == HttpStatus.SC_OK)
