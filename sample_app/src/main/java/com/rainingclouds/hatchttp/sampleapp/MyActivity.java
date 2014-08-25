@@ -24,48 +24,7 @@ public class MyActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
-        try {
-            mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new LocationListener() {
-                @Override
-                public void onLocationChanged(final Location location) {
-                    mLatestLocation = location;
-                }
 
-                @Override
-                public void onStatusChanged(final String provider, final int status, final Bundle extras) {
-                    //TODO handle it gracefully
-                }
-
-                @Override
-                public void onProviderEnabled(final String provider) {
-                    //TODO handle it gracefully
-                }
-
-                @Override
-                public void onProviderDisabled(final String provider) {
-                    //TODO handle it gracefully
-                }
-            });
-            mLatestLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if (mLatestLocation == null) {
-                Log.d("asdasdasd", "GPS has no latest location so trying now NETWORK_PROVIDED");
-                mLatestLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-            }
-            new PlotMeTask(getApplicationContext(), new TaskMonitor(), mLatestLocation).execute(new TaskEventListener<String>() {
-                @Override
-                public void onTaskExecutionComplete(String response) {
-                    Log.d("asdasd",response);
-                }
-
-                @Override
-                public void onTaskExceptionEvent(HatcHttpException exception) {
-                    Log.e("asdasd","asdasdasd sdfsdf",exception);
-                }
-            });
-        }catch (Exception e){
-            Log.d("asdasd","asdasd",e);
-        }
     }
 
 

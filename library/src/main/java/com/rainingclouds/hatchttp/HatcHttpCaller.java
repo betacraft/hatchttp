@@ -1,4 +1,4 @@
-package com.rainingclouds.hatchttp.utils;
+package com.rainingclouds.hatchttp;
 
 import android.util.Log;
 import com.rainingclouds.hatchttp.exception.HatcHttpErrorCode;
@@ -58,21 +58,7 @@ public class HatcHttpCaller {
         return new HatcHttpAsyncCaller();
     }
 
-    /**
-     * Setter for connection retries attempts
-     * @param maxRetries
-     */
-    public void setMaxConnectionRetries(final int maxRetries){
-        MAX_CONNECTION_RETRIES = maxRetries;
-    }
 
-    /**
-     * Setter for connection timeout
-     * @param timeout
-     */
-    public void setConnectionTimeoutTime(final int timeout){
-        CONNECTION_TIMEOUT_TIME = timeout;
-    }
 
     /**
      * Execute request method

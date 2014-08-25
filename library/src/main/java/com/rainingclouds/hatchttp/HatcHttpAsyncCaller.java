@@ -1,6 +1,5 @@
-package com.rainingclouds.hatchttp.utils;
+package com.rainingclouds.hatchttp;
 
-import com.rainingclouds.hatchttp.TaskMonitor;
 import com.rainingclouds.hatchttp.exception.HatcHttpException;
 
 import org.apache.http.message.BasicNameValuePair;
