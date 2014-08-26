@@ -5,6 +5,7 @@ package com.rainingclouds.hatchttp.exception;
  * Created by akshay on 7/22/14.
  */
 public enum HatcHttpErrorCode {
+    REQUEST_PREPARATION_EXCEPTION,
     NO_DATA_CONNECTION,
     MAX_RETRIES_FOR_CONTACTING_SERVER,
     REQUEST_TIMEOUT,

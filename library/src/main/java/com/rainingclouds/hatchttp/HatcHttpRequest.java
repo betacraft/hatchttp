@@ -2,7 +2,8 @@ package com.rainingclouds.hatchttp;
 
 import android.util.Log;
 
-import io.netty.handler.codec.http.DefaultHttpRequest;
+import io.netty.handler.codec.http.DefaultFullHttpRequest;
+import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpVersion;
@@ -24,9 +25,10 @@ public final class HatcHttpRequest {
     /**
      * Underlying request
      */
-    private HttpRequest mHttpRequest;
+    private FullHttpRequest mHttpRequest;
     private NettyHttpClient.NettyHttpClientListener mClientChannelListener;
     private HatcHttpRequestHandler mRequestHandler;
+
     {
        mClientChannelListener = new NettyHttpClient.NettyHttpClientListener
                 () {
@@ -42,8 +44,8 @@ public final class HatcHttpRequest {
         };
     }
 
-    private HatcHttpRequest(final HatcHttpMethod method, final String url) {
-        mHttpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1,method.getHttpMethod(),url);
+    private HatcHttpRequest(final HatcHttpMethod method, final String url){
+        mHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1,method.getHttpMethod(),url);
         mQueryStringEncoder = new QueryStringEncoder(url);
     }
 
@@ -57,9 +59,17 @@ public final class HatcHttpRequest {
         return this;
     }
 
+    public HatcHttpRequest setContent(final String content){
+        mHttpRequest.content().writeBytes(content.getBytes());
+        addHeader("Content-Length",content.length());
+        return this;
+    }
+
     String getUrl(){
         return mHttpRequest.getUri();
     }
+
+
 
     HttpRequest getHttpRequest(){
         return mHttpRequest;
@@ -82,12 +92,17 @@ public final class HatcHttpRequest {
     }
 
     public static HatcHttpRequest prepareFor(final HatcHttpMethod method,
-                                             final String url){
+                                             final String url) {
         return new HatcHttpRequest(method,url);
     }
 
 
     public void execute(final HatcHttpTask.HatcHttpRequestListener clientHandlerListener){
+        try {
+            mHttpRequest.setUri(mQueryStringEncoder.toUri().toASCIIString());
+        }catch (Exception e){
+            clientHandlerListener.onException(e);
+        }
         mRequestHandler = new HatcHttpRequestHandler(clientHandlerListener);
         NettyHttpClient httpClient =  NettyHttpClient.getFor(this);
         httpClient.writeRequest(mHttpRequest);

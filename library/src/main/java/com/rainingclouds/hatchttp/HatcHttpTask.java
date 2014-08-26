@@ -23,7 +23,7 @@ public abstract class HatcHttpTask<T> {
     private TaskEventListener mTaskEventListener;
     protected Context mContext;
     protected TaskMonitor mTaskMonitor;
-    private AtomicBoolean mIsCancelled;
+    private AtomicBoolean mIsCancelled = new AtomicBoolean(false);
     private volatile Callable<Void> mExecutionRoutine;
 
     public interface HatcHttpRequestListener {
@@ -31,14 +31,18 @@ public abstract class HatcHttpTask<T> {
         void onException(final Throwable throwable);
     }
 
-    public abstract HatcHttpRequest getRequest();
+    public abstract HatcHttpRequest getRequest() throws Exception;
 
     public void task(final HatcHttpRequestListener clientHandlerListener) throws HatcHttpException{
-        getRequest().execute(clientHandlerListener);
+        try {
+            getRequest().execute(clientHandlerListener);
+        }catch (Exception e){
+            throw new HatcHttpException(HatcHttpErrorCode.REQUEST_PREPARATION_EXCEPTION,e);
+        }
     }
 
 
-    public abstract T gotResponse(final String response);
+    public abstract T gotResponse(final String response) throws Exception;
 
     public HatcHttpTask(final Context context, final TaskMonitor taskMonitor){
         mContext = context;
@@ -54,7 +58,13 @@ public abstract class HatcHttpTask<T> {
                         @Override
                         public void onComplete(final HttpResponseStatus status, final HttpHeaders headers,
                                                final String response) {
-                            dispatchTaskExecutionCompleteEvent(gotResponse(response));
+                            try {
+                                dispatchTaskExecutionCompleteEvent(gotResponse(response));
+                            }catch (final Exception e){
+                                if(!mIsCancelled.get()){
+                                    dispatchTaskExceptionEvent(new HatcHttpException(HatcHttpErrorCode.UNKNOWN,e));
+                                }
+                            }
                         }
 
                         @Override
@@ -64,7 +74,7 @@ public abstract class HatcHttpTask<T> {
                         }
                     });
                 } catch (final HatcHttpException e) {
-                    e.printStackTrace();
+
                     if (!mIsCancelled.get()) {
                         dispatchTaskExceptionEvent(e);
                     }

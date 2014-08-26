@@ -12,7 +12,7 @@
         jar="/Users/akshay/CodeBase/hatchttp/app/build/intermediates/exploded-aar/hatchttp/library/unspecified/classes.jar"
         jumboMode="false"
         revision="20.0.0"
-        sha1="436aa38bd5b7b9f588f7e2b5fdd31f3fe64fd86c"/>
+        sha1="cb3c30d92c2b40b7e533fc16d10e1bb858a99813"/>
     <item
         dex="/Users/akshay/CodeBase/hatchttp/app/build/intermediates/pre-dexed/debug/classes-96367f54832ed18bdcc264b7d41db432bba1888f.jar"
         jar="/Users/akshay/CodeBase/hatchttp/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/20.0.0/classes.jar"
