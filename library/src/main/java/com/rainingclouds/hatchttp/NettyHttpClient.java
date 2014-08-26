@@ -3,12 +3,19 @@ package com.rainingclouds.hatchttp;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
-import io.netty.util.concurrent.GenericProgressiveFutureListener;
-import io.netty.util.concurrent.ProgressiveFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.http.HttpClientCodec;
+import io.netty.handler.codec.http.HttpContentDecompressor;
+import io.netty.handler.codec.http.HttpRequest;
 
 /**
+ * NettyHttp Client
  * Created by akshay on 22/08/14.
  */
 class NettyHttpClient {
@@ -22,9 +29,13 @@ class NettyHttpClient {
         void connectionSuccess();
     }
 
-    private NettyHttpClient(final String url, final HatcHttpCallerOptions options,
-                            final NettyHttpClientListener nettyHttpClientListener) throws URISyntaxException {
-        final URI uri = new URI(url);
+    private NettyHttpClient(final HatcHttpRequest hatcHttpRequest){
+        final URI uri;
+        try {
+            uri = new URI(hatcHttpRequest.getUrl());
+        }catch (URISyntaxException ex){
+            throw new IllegalStateException("URL passed is illegal",ex);
+        }
         final String scheme = uri.getScheme() == null? "http" : uri.getScheme();
         final String host = uri.getHost() == null ? "127.0.0.1" : uri.getHost();
         int port = uri.getPort();
@@ -38,37 +49,38 @@ class NettyHttpClient {
         if (!"http".equalsIgnoreCase(scheme) && !"https".equalsIgnoreCase(scheme)) {
             throw new IllegalStateException("Only HTTP(S) is supported");
         }
-        //TODO add a listener here
-        final ChannelFuture channelFuture = options.getBootstrap().connect(host, port);
-        channelFuture.addListener(new GenericProgressiveFutureListener<ProgressiveFuture<Object>>() {
-            @Override
-            public void operationProgressed(final ProgressiveFuture future, final long progress,
-                                            final long total) throws Exception {
 
-            }
+        final Bootstrap bootstrap = new Bootstrap().channel(NioSocketChannel.class)
+                .group(hatcHttpRequest.getOptions().getWorker())
+                .handler(new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        protected void initChannel(final SocketChannel ch) throws Exception {
+                            final ChannelPipeline pipeline = ch.pipeline();
+                            pipeline.addLast(new HttpClientCodec());
+                            pipeline.addLast(new HttpContentDecompressor());
+                            pipeline.addLast(hatcHttpRequest.getRequestHandler());
+                        }
+                });
 
-            @Override
-            public void operationComplete(final ProgressiveFuture future) throws Exception {
-                if(future.isSuccess()) {
-                    nettyHttpClientListener.connectionSuccess();
-                    return;
-                }
-                nettyHttpClientListener.connectionFailed(future.cause());
-            }
-        });
+        final ChannelFuture channelFuture = bootstrap.connect(host, port).syncUninterruptibly();
         mChannel = channelFuture.channel();
     }
 
+    ChannelFuture writeRequest(final HttpRequest request){
+        ChannelFuture future = mChannel.write(request);
+        mChannel.flush();
+        return future;
+    }
+
+
     /**
      * Factory method
-     * @param url
-     * @param options
+     * @param hatcHttpRequest
      * @return
      * @throws URISyntaxException
      */
-    static NettyHttpClient getFor(final String url, final HatcHttpCallerOptions options,
-                                  final NettyHttpClientListener listener) throws URISyntaxException {
-        return new NettyHttpClient(url, options, listener);
+    static NettyHttpClient getFor(final HatcHttpRequest hatcHttpRequest){
+        return new NettyHttpClient(hatcHttpRequest);
     }
 
 

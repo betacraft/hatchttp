@@ -5,11 +5,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+
 /**
- * Task executor executes submitted tasks
- * User: akshay
+ * Created by akshay on 26/08/14.
  */
-final class TaskExecutor {
+class TaskExecutor {
     /**
      * TAG for logging
      */
@@ -25,7 +25,7 @@ final class TaskExecutor {
 
 
     private TaskExecutor() {
-        mExecutorService = Executors.newFixedThreadPool(5);
+        mExecutorService = Executors.newFixedThreadPool(4);
 
     }
 
