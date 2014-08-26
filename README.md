@@ -5,10 +5,15 @@ is very similar to async tasks, but HatcHttp would make your code modular and ea
  
 ## Features
 
-1. Asynchronous API calls, runs on a separate thread pool (ExecutorService)
-2. Supports Post, JSONPost, Put, Delete, Get (Patch and other methods are in next release)
+1. Based on Java NIO 
+2. Asynchronous API calls, runs on a separate thread pool (ExecutorService)
+3. Supports Post, JSONPost, Put, Delete, Get (Patch and other methods are in next release)
 
 ## What is different ?
+
+### Based on Netty
+
+This version of HatchHttp is based on Netty and leverage the advantage of NIO.
 
 ### Easier way to cancel all running tasks : TaskMonitor
 
@@ -281,6 +286,7 @@ RainingClouds Technologies Pvt Ltd
 The MIT License (MIT)
 
 Copyright (c) 2014 Akshay Deo
+Copyright (c) 2014 RainingClouds Technologies Private Limited
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 

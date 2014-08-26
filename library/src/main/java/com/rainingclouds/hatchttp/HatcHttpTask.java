@@ -10,68 +10,60 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.HttpResponseStatus;
+
+
 /**
- * Class to perform a prepareRequest asynchronously in separate thread
- *
- * @param <T>
+ * Created by akshay on 26/08/14.
  */
-
 public abstract class HatcHttpTask<T> {
-    /**
-     * Logger
-     */
-    private static final String TAG = "###Task###";
-    /**
-     * Event listeners associated with this task
-     */
-    private TaskEventListener<T> mTaskEventListener;
-    /**
-     * Executor thread
-     */
-    private volatile Callable<T> mExecutionRoutine;
-    /**
-     * Status of executor thread
-     */
-    private AtomicBoolean mIsCancelled = new AtomicBoolean(false);
-    /**
-     * Task monitor
-     */
+
+    private static final String TAG = "###HatcHttpTask###";
+    private TaskEventListener mTaskEventListener;
+    private Context mContext;
     private TaskMonitor mTaskMonitor;
-    /**
-     * Context
-     */
-    protected Context mContext;
+    private AtomicBoolean mIsCancelled;
+    private volatile Callable<Void> mExecutionRoutine;
+
+    public interface HatcHttpRequestListener {
+        void onComplete(final HttpResponseStatus status, final HttpHeaders headers,final String response);
+        void onException(final Throwable throwable);
+    }
+
+    public abstract HatcHttpRequest getRequest();
+
+    public void task(final HatcHttpRequestListener clientHandlerListener) throws HatcHttpException{
+        getRequest().execute(clientHandlerListener);
+    }
 
 
-    /**
-     * Task to be executed under concrete class
-     *
-     * @return T
-     * @throws com.rainingclouds.hatchttp.exception.HatcHttpException
-     */
-    protected abstract T task() throws HatcHttpException;
+    public abstract T gotResponse(final HttpResponseStatus responseStatus, final HttpHeaders headers,
+                                  final String response);
 
-    /**
-     * Constructor
-     *
-     * @param context     context in which this task is running
-     * @param taskMonitor task monitor allocated for this task see @link{TaskMonitor}
-     */
-    public HatcHttpTask(final Context context, final TaskMonitor taskMonitor) {
-        //Log.d(TAG, "executing");
+    public HatcHttpTask(final Context context, final TaskMonitor taskMonitor){
         mContext = context;
         mTaskMonitor = taskMonitor;
-        if (mTaskMonitor != null)
+        if(mTaskMonitor != null)
             mTaskMonitor.add(this);
-        mExecutionRoutine = new Callable<T>() {
+
+        mExecutionRoutine = new Callable<Void>() {
             @Override
-            public T call() throws Exception {
+            public Void call() throws Exception {
                 try {
-                    final T resp = task();
-                    if (!mIsCancelled.get()) {
-                        dispatchTaskExecutionCompleteEvent(resp);
-                    }
-                    return resp;
+                    task(new HatcHttpRequestListener() {
+                        @Override
+                        public void onComplete(final HttpResponseStatus status, final HttpHeaders headers,
+                                               final String response) {
+                            dispatchTaskExecutionCompleteEvent(gotResponse(status, headers, response));
+                        }
+
+                        @Override
+                        public void onException(final Throwable throwable) {
+                            dispatchTaskExceptionEvent(new HatcHttpException(HatcHttpErrorCode
+                                    .CLIENT_PROTOCOL_EXCEPTION,throwable));
+                        }
+                    });
                 } catch (final HatcHttpException e) {
                     e.printStackTrace();
                     if (!mIsCancelled.get()) {
@@ -82,6 +74,7 @@ public abstract class HatcHttpTask<T> {
             }
         };
     }
+
 
     /**
      * Callback method to be called when execution of task throws an exception
@@ -105,19 +98,6 @@ public abstract class HatcHttpTask<T> {
             mTaskMonitor.remove(this);
         if (!mIsCancelled.get())
             mTaskEventListener.onTaskExecutionComplete(resp);
-    }
-
-
-    /**
-     * Execute the given task
-     */
-    public Future<T> execute() {
-
-        if (!DataConnectionUtils.dataConnectivityAvailable(mContext)) {
-            dispatchTaskExceptionEvent(new HatcHttpException(HatcHttpErrorCode.NO_DATA_CONNECTION));
-            return null;
-        }
-        return TaskExecutor.getInstance().submitTask(mExecutionRoutine);
     }
 
 
