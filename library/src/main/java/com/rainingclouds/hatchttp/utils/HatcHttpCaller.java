@@ -54,8 +54,8 @@ public class HatcHttpCaller {
      * Factory methods
      * @return
      */
-    public static HatcHttpAsyncCaller getInstance(){
-        return new HatcHttpAsyncCaller();
+    public static HatcHttpCaller getInstance(){
+        return new HatcHttpCaller();
     }
 
     /**
