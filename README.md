@@ -1,5 +1,7 @@
 # HatcHttp 
 
+####NOTE: README is not quite upto date. Currently this library is under heavy development so I recommend not to use it in live projects unless this message is striked out.
+
 HatcHttp is a very simple and straightforward library for performing HTTP call inside your Android app. Architecture 
 is very similar to async tasks, but HatcHttp would make your code modular and easier to maintain.
  

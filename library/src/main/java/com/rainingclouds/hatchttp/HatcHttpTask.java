@@ -21,8 +21,8 @@ public abstract class HatcHttpTask<T> {
 
     private static final String TAG = "###HatcHttpTask###";
     private TaskEventListener mTaskEventListener;
-    private Context mContext;
-    private TaskMonitor mTaskMonitor;
+    protected Context mContext;
+    protected TaskMonitor mTaskMonitor;
     private AtomicBoolean mIsCancelled;
     private volatile Callable<Void> mExecutionRoutine;
 
@@ -38,8 +38,7 @@ public abstract class HatcHttpTask<T> {
     }
 
 
-    public abstract T gotResponse(final HttpResponseStatus responseStatus, final HttpHeaders headers,
-                                  final String response);
+    public abstract T gotResponse(final String response);
 
     public HatcHttpTask(final Context context, final TaskMonitor taskMonitor){
         mContext = context;
@@ -55,7 +54,7 @@ public abstract class HatcHttpTask<T> {
                         @Override
                         public void onComplete(final HttpResponseStatus status, final HttpHeaders headers,
                                                final String response) {
-                            dispatchTaskExecutionCompleteEvent(gotResponse(status, headers, response));
+                            dispatchTaskExecutionCompleteEvent(gotResponse(response));
                         }
 
                         @Override
