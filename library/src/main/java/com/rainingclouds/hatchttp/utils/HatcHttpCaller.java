@@ -1,8 +1,11 @@
 package com.rainingclouds.hatchttp.utils;
 
 import android.util.Log;
+
 import com.rainingclouds.hatchttp.exception.HatcHttpErrorCode;
 import com.rainingclouds.hatchttp.exception.HatcHttpException;
+import com.rainingclouds.hatchttp.extentions.HttpDeleteWithBody;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
@@ -52,25 +55,28 @@ public class HatcHttpCaller {
 
     /**
      * Factory methods
+     *
      * @return
      */
-    public static HatcHttpCaller getInstance(){
+    public static HatcHttpCaller getInstance() {
         return new HatcHttpCaller();
     }
 
     /**
      * Setter for connection retries attempts
+     *
      * @param maxRetries
      */
-    public void setMaxConnectionRetries(final int maxRetries){
+    public void setMaxConnectionRetries(final int maxRetries) {
         MAX_CONNECTION_RETRIES = maxRetries;
     }
 
     /**
      * Setter for connection timeout
+     *
      * @param timeout
      */
-    public void setConnectionTimeoutTime(final int timeout){
+    public void setConnectionTimeoutTime(final int timeout) {
         CONNECTION_TIMEOUT_TIME = timeout;
     }
 
@@ -101,12 +107,12 @@ public class HatcHttpCaller {
             } catch (IOException e) {
                 Log.e(TAG, "Exception happened while contacting to server", e);
                 underlyingException = e;
-            } catch (Exception e){
-                Log.e(TAG, "Exception happened while connecting to the server",e);
-                underlyingException =e ;
+            } catch (Exception e) {
+                Log.e(TAG, "Exception happened while connecting to the server", e);
+                underlyingException = e;
             }
         } while (++retryCount < MAX_CONNECTION_RETRIES);
-        throw new HatcHttpException(HatcHttpErrorCode.MAX_RETRIES_FOR_CONTACTING_SERVER,underlyingException);
+        throw new HatcHttpException(HatcHttpErrorCode.MAX_RETRIES_FOR_CONTACTING_SERVER, underlyingException);
     }
 
     /**
@@ -118,8 +124,8 @@ public class HatcHttpCaller {
      * @throws com.rainingclouds.hatchttp.exception.HatcHttpException
      */
     public String sendPostRequest(final String url,
-                                         final List<BasicNameValuePair> headers,
-                                         List<BasicNameValuePair> params)
+                                  final List<BasicNameValuePair> headers,
+                                  List<BasicNameValuePair> params)
             throws HatcHttpException {
         // Create http post request
         HttpPost httpPost = new HttpPost(url);
@@ -141,7 +147,7 @@ public class HatcHttpCaller {
             else if (status.getStatusCode() == HttpStatus.SC_REQUEST_TIMEOUT) {
                 throw new HatcHttpException(HatcHttpErrorCode.REQUEST_TIMEOUT);
             }
-            Log.e(TAG,"Response from server for request " + url + " is " + responseBody);
+            Log.e(TAG, "Response from server for request " + url + " is " + responseBody);
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG, "Error while executing post request", e);
             throw new HatcHttpException(HatcHttpErrorCode.UNSUPPORTED_ENCODING, e);
@@ -152,7 +158,7 @@ public class HatcHttpCaller {
             Log.e(TAG, "Error while executing post request", e);
             throw new HatcHttpException(HatcHttpErrorCode.SOCKET_EXCEPTION, e);
         }
-        throw new HatcHttpException(status.getStatusCode(),status.getReasonPhrase());
+        throw new HatcHttpException(status.getStatusCode(), status.getReasonPhrase());
     }
 
     /**
@@ -164,8 +170,8 @@ public class HatcHttpCaller {
      * @throws com.rainingclouds.hatchttp.exception.HatcHttpException
      */
     public String sendPutRequest(final String url,
-                                        final List<BasicNameValuePair> headers,
-                                        List<BasicNameValuePair> params)
+                                 final List<BasicNameValuePair> headers,
+                                 List<BasicNameValuePair> params)
             throws HatcHttpException {
         // Create http post request
         HttpPost httpPost = new HttpPost(url);
@@ -195,7 +201,7 @@ public class HatcHttpCaller {
             else if (status.getStatusCode() == HttpStatus.SC_REQUEST_TIMEOUT) {
                 throw new HatcHttpException(HatcHttpErrorCode.REQUEST_TIMEOUT);
             }
-            Log.e(TAG,"Response from server for request " + url + " is " + responseBody);
+            Log.e(TAG, "Response from server for request " + url + " is " + responseBody);
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG, "Error while executing put request", e);
             throw new HatcHttpException(HatcHttpErrorCode.UNSUPPORTED_ENCODING, e);
@@ -206,7 +212,7 @@ public class HatcHttpCaller {
             Log.e(TAG, "Error while executing put request", e);
             throw new HatcHttpException(HatcHttpErrorCode.SOCKET_EXCEPTION, e);
         }
-        throw new HatcHttpException(status.getStatusCode(),status.getReasonPhrase());
+        throw new HatcHttpException(status.getStatusCode(), status.getReasonPhrase());
     }
 
     /**
@@ -218,8 +224,8 @@ public class HatcHttpCaller {
      * @throws com.rainingclouds.hatchttp.exception.HatcHttpException
      */
     public String sendDeleteRequest(final String url,
-                                           final List<BasicNameValuePair> headers,
-                                           List<BasicNameValuePair> params)
+                                    final List<BasicNameValuePair> headers,
+                                    List<BasicNameValuePair> params)
             throws HatcHttpException {
         // Create http post request
         HttpPost httpPost = new HttpPost(url);
@@ -262,6 +268,48 @@ public class HatcHttpCaller {
     }
 
 
+
+    public String sendDeleteRequest(final String url, final List<BasicNameValuePair> headers,
+                                    final JSONObject body) throws HatcHttpException {
+        // Create http post request
+        HttpDeleteWithBody httpDelete = new HttpDeleteWithBody(url);
+        StatusLine status;
+        String responseBody;
+        try {
+            if (headers != null) {
+                for (BasicNameValuePair header : headers)
+                    httpDelete.addHeader(header.getName(), header.getValue());
+            }
+            httpDelete.addHeader("Accept","application/json");
+            httpDelete.addHeader("Content-Type","application/json");
+            //Log.d(TAG, httpPost.getURI().toString());
+            StringEntity jsonEntity = new StringEntity(body.toString());
+            jsonEntity.setContentType("application/json");
+            httpDelete.setEntity(jsonEntity);
+
+            Log.d(TAG,"Content length :" + httpDelete.getEntity().getContentLength());
+            HttpResponse response = executeRequest(httpDelete);
+            status = response.getStatusLine();
+            responseBody = EntityUtils.toString(response.getEntity());
+            if (status.getStatusCode() == HttpStatus.SC_OK)
+                return responseBody;
+            else if (status.getStatusCode() == HttpStatus.SC_REQUEST_TIMEOUT) {
+                throw new HatcHttpException(HatcHttpErrorCode.REQUEST_TIMEOUT);
+            }
+            Log.e(TAG, "Response from server for request " + url + " is " + responseBody);
+        } catch (UnsupportedEncodingException e) {
+            Log.e(TAG, "Error while executing delete request", e);
+            throw new HatcHttpException(HatcHttpErrorCode.UNSUPPORTED_ENCODING, e);
+        } catch (ClientProtocolException e) {
+            Log.e(TAG, "Error while executing delete request", e);
+            throw new HatcHttpException(HatcHttpErrorCode.CLIENT_PROTOCOL_EXCEPTION, e);
+        } catch (IOException e) {
+            Log.e(TAG, "Error while executing delete request", e);
+            throw new HatcHttpException(HatcHttpErrorCode.SOCKET_EXCEPTION, e);
+        }
+        throw new HatcHttpException(status.getStatusCode(), status.getReasonPhrase());
+    }
+
     /**
      * Method to send a put request to the passed URL
      *
@@ -270,8 +318,8 @@ public class HatcHttpCaller {
      * @throws com.rainingclouds.hatchttp.exception.HatcHttpException
      */
     public String sendPutRequest(final String url,
-                                        List<BasicNameValuePair> headers,
-                                        JSONObject json)
+                                 List<BasicNameValuePair> headers,
+                                 JSONObject json)
             throws HatcHttpException {
         // Create http post request
         HttpPut httpPut = new HttpPut(url);
@@ -299,7 +347,7 @@ public class HatcHttpCaller {
             else if (status.getStatusCode() == HttpStatus.SC_REQUEST_TIMEOUT) {
                 throw new HatcHttpException(HatcHttpErrorCode.REQUEST_TIMEOUT);
             }
-            Log.e(TAG,"Response from server for request " + url + " is " + responseBody);
+            Log.e(TAG, "Response from server for request " + url + " is " + responseBody);
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG, "Error while executing put request", e);
             throw new HatcHttpException(HatcHttpErrorCode.UNSUPPORTED_ENCODING, e);
@@ -310,7 +358,7 @@ public class HatcHttpCaller {
             Log.e(TAG, "Error while executing put request", e);
             throw new HatcHttpException(HatcHttpErrorCode.SOCKET_EXCEPTION, e);
         }
-        throw new HatcHttpException(status.getStatusCode(),responseBody);
+        throw new HatcHttpException(status.getStatusCode(), responseBody);
     }
 
 
@@ -344,7 +392,7 @@ public class HatcHttpCaller {
             else if (status.getStatusCode() == HttpStatus.SC_REQUEST_TIMEOUT) {
                 throw new HatcHttpException(HatcHttpErrorCode.REQUEST_TIMEOUT);
             }
-            Log.e(TAG,"Response from server for request " + url + " is " + responseBody);
+            Log.e(TAG, "Response from server for request " + url + " is " + responseBody);
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG, "Error while executing post request", e);
             throw new HatcHttpException(HatcHttpErrorCode.UNSUPPORTED_ENCODING, e);
@@ -355,7 +403,7 @@ public class HatcHttpCaller {
             Log.e(TAG, "Error while executing post request", e);
             throw new HatcHttpException(HatcHttpErrorCode.SOCKET_EXCEPTION, e);
         }
-        throw new HatcHttpException(status.getStatusCode(),responseBody);
+        throw new HatcHttpException(status.getStatusCode(), responseBody);
     }
 
 
@@ -370,8 +418,8 @@ public class HatcHttpCaller {
      * @throws com.rainingclouds.hatchttp.exception.HatcHttpException
      */
     public String sendGetRequest(final String url,
-                                        final List<BasicNameValuePair> headers,
-                                        List<BasicNameValuePair> params)
+                                 final List<BasicNameValuePair> headers,
+                                 List<BasicNameValuePair> params)
             throws HatcHttpException {
 
         // Prepare http get request
@@ -401,7 +449,7 @@ public class HatcHttpCaller {
             } else if (status.getStatusCode() == HttpStatus.SC_REQUEST_TIMEOUT) {
                 throw new HatcHttpException(HatcHttpErrorCode.REQUEST_TIMEOUT);
             }
-            Log.e(TAG,"Response from server for request " + url + " is " + responseBody);
+            Log.e(TAG, "Response from server for request " + url + " is " + responseBody);
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG, "Error while executing get request", e);
             throw new HatcHttpException(HatcHttpErrorCode.UNSUPPORTED_ENCODING, e);
@@ -412,7 +460,7 @@ public class HatcHttpCaller {
             Log.e(TAG, "Error while executing get request", e);
             throw new HatcHttpException(HatcHttpErrorCode.SOCKET_EXCEPTION, e);
         }
-        throw new HatcHttpException(status.getStatusCode(),responseBody);
+        throw new HatcHttpException(status.getStatusCode(), responseBody);
     }
 
 }

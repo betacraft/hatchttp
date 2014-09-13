@@ -2,8 +2,13 @@ package com.rainingclouds.hatchttp.sampleapp;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.rainingclouds.hatchttp.utils.HatcHttpCaller;
+
+import org.json.JSONObject;
 
 
 public class MyActivity extends ActionBarActivity {
@@ -13,6 +18,7 @@ public class MyActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
         
+
     }
 
 

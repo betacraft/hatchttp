@@ -2,42 +2,6 @@
 <pre-dex-items>
 
     <item
-        dex="/Users/akshay/CodeBase/hatchttp/sample_app/build/intermediates/pre-dexed/debug/internal_impl-20.0.0-0d99e53f809bc5491559954933dcb84e6c17bc9d.jar"
-        jar="/Users/akshay/CodeBase/hatchttp/sample_app/build/intermediates/exploded-aar/com.android.support/support-v4/20.0.0/libs/internal_impl-20.0.0.jar"
-        jumboMode="false"
-        revision="20.0.0"
-        sha1="e40b3078e3fbd353c9f44da8df25a8fc0078209d"/>
-    <item
-        dex="/Users/akshay/CodeBase/hatchttp/sample_app/build/intermediates/pre-dexed/debug/classes-ead5e4b74fd507fba4ad592b5cb378c89017ca7b.jar"
-        jar="/Users/akshay/CodeBase/hatchttp/sample_app/build/intermediates/exploded-aar/com.android.support/support-v4/20.0.0/classes.jar"
-        jumboMode="false"
-        revision="20.0.0"
-        sha1="8694693636ab36910c8100ce527c258ff3ebece0"/>
-    <item
-        dex="/Users/akshay/CodeBase/hatchttp/app/build/intermediates/pre-dexed/debug/classes-96367f54832ed18bdcc264b7d41db432bba1888f.jar"
-        jar="/Users/akshay/CodeBase/hatchttp/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/20.0.0/classes.jar"
-        jumboMode="false"
-        revision="20.0.0"
-        sha1="f21927d22fe31889ecce94dd697a2e75b137e0ef"/>
-    <item
-        dex="/Users/akshay/CodeBase/hatchttp/app/build/intermediates/pre-dexed/debug/classes-dff9b603bfb3374ea625193ac8086d57fd388e25.jar"
-        jar="/Users/akshay/CodeBase/hatchttp/app/build/intermediates/exploded-aar/com.android.support/support-v4/20.0.0/classes.jar"
-        jumboMode="false"
-        revision="20.0.0"
-        sha1="8694693636ab36910c8100ce527c258ff3ebece0"/>
-    <item
-        dex="/Users/akshay/CodeBase/hatchttp/app/build/intermediates/pre-dexed/debug/support-annotations-20.0.0-0b9311424a6c946c9a808f81ceeaf23321cfc1bd.jar"
-        jar="/Users/akshay/Tools/android-sdk-macosx/extras/android/m2repository/com/android/support/support-annotations/20.0.0/support-annotations-20.0.0.jar"
-        jumboMode="false"
-        revision="20.0.0"
-        sha1="9d9013e9ff35fc3756411e62873c363c70c638fa"/>
-    <item
-        dex="/Users/akshay/CodeBase/hatchttp/app/build/intermediates/pre-dexed/debug/netty-all-4.0.23.Final-fbf7d5b951449f1d3f58d8053fb5bb06698f781c.jar"
-        jar="/Users/akshay/.gradle/caches/modules-2/files-2.1/io.netty/netty-all/4.0.23.Final/294104aaf1781d6a56a07d561e792c5d0c95f45/netty-all-4.0.23.Final.jar"
-        jumboMode="false"
-        revision="20.0.0"
-        sha1="0294104aaf1781d6a56a07d561e792c5d0c95f45"/>
-    <item
         dex="/Users/akshay/CodeBase/hatchttp/app/build/intermediates/pre-dexed/debug/classes-507c2889a6abc26bc61be4e141fa218dbe9cb949.jar"
         jar="/Users/akshay/CodeBase/hatchttp/app/build/intermediates/exploded-aar/hatchttp/library/unspecified/classes.jar"
         jumboMode="false"
@@ -50,16 +14,52 @@
         revision="20.0.0"
         sha1="f21927d22fe31889ecce94dd697a2e75b137e0ef"/>
     <item
+        dex="/Users/akshay/CodeBase/hatchttp/sample_app/build/intermediates/pre-dexed/debug/internal_impl-20.0.0-0d99e53f809bc5491559954933dcb84e6c17bc9d.jar"
+        jar="/Users/akshay/CodeBase/hatchttp/sample_app/build/intermediates/exploded-aar/com.android.support/support-v4/20.0.0/libs/internal_impl-20.0.0.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="e40b3078e3fbd353c9f44da8df25a8fc0078209d"/>
+    <item
+        dex="/Users/akshay/CodeBase/hatchttp/sample_app/build/intermediates/pre-dexed/debug/classes-ead5e4b74fd507fba4ad592b5cb378c89017ca7b.jar"
+        jar="/Users/akshay/CodeBase/hatchttp/sample_app/build/intermediates/exploded-aar/com.android.support/support-v4/20.0.0/classes.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="8694693636ab36910c8100ce527c258ff3ebece0"/>
+    <item
+        dex="/Users/akshay/CodeBase/hatchttp/app/build/intermediates/pre-dexed/debug/netty-all-4.0.23.Final-fbf7d5b951449f1d3f58d8053fb5bb06698f781c.jar"
+        jar="/Users/akshay/.gradle/caches/modules-2/files-2.1/io.netty/netty-all/4.0.23.Final/294104aaf1781d6a56a07d561e792c5d0c95f45/netty-all-4.0.23.Final.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="0294104aaf1781d6a56a07d561e792c5d0c95f45"/>
+    <item
+        dex="/Users/akshay/CodeBase/hatchttp/app/build/intermediates/pre-dexed/debug/classes-dff9b603bfb3374ea625193ac8086d57fd388e25.jar"
+        jar="/Users/akshay/CodeBase/hatchttp/app/build/intermediates/exploded-aar/com.android.support/support-v4/20.0.0/classes.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="8694693636ab36910c8100ce527c258ff3ebece0"/>
+    <item
         dex="/Users/akshay/CodeBase/hatchttp/app/build/intermediates/pre-dexed/debug/internal_impl-20.0.0-696e96ea041cf0242cc599282f01cf2193c377f7.jar"
         jar="/Users/akshay/CodeBase/hatchttp/app/build/intermediates/exploded-aar/com.android.support/support-v4/20.0.0/libs/internal_impl-20.0.0.jar"
         jumboMode="false"
         revision="20.0.0"
         sha1="e40b3078e3fbd353c9f44da8df25a8fc0078209d"/>
     <item
+        dex="/Users/akshay/CodeBase/hatchttp/app/build/intermediates/pre-dexed/debug/classes-96367f54832ed18bdcc264b7d41db432bba1888f.jar"
+        jar="/Users/akshay/CodeBase/hatchttp/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/20.0.0/classes.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="f21927d22fe31889ecce94dd697a2e75b137e0ef"/>
+    <item
+        dex="/Users/akshay/CodeBase/hatchttp/app/build/intermediates/pre-dexed/debug/support-annotations-20.0.0-0b9311424a6c946c9a808f81ceeaf23321cfc1bd.jar"
+        jar="/Users/akshay/Tools/android-sdk-macosx/extras/android/m2repository/com/android/support/support-annotations/20.0.0/support-annotations-20.0.0.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="9d9013e9ff35fc3756411e62873c363c70c638fa"/>
+    <item
         dex="/Users/akshay/CodeBase/hatchttp/sample_app/build/intermediates/pre-dexed/debug/classes-9b1e35943e32d0d3cca2d11d07ba4e59a1212ce6.jar"
         jar="/Users/akshay/CodeBase/hatchttp/sample_app/build/intermediates/exploded-aar/hatchttp/library/unspecified/classes.jar"
         jumboMode="false"
         revision="20.0.0"
-        sha1="044426ddede9262538c94d7d3b59c7f79690fb20"/>
+        sha1="99ed7fdded0e212284ad496c677cc454ffcf4662"/>
 
 </pre-dex-items>
