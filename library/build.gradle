@@ -33,6 +33,7 @@ android {
 uploadArchives {
     repositories.mavenDeployer {
         repository(url: "file:///Users/akshay/CodeBase/hatchttp_maven_repo")
+        pom.version = '1.0'
     }
 }
 
