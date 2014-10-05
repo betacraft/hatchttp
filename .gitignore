@@ -19,5 +19,6 @@ gen-external-apklibs
 .idea/*
 commit_message
 .gradle
+*/build/*
 build/*
 local.properties
