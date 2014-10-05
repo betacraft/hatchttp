@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-
+apply plugin: 'maven'
 android {
     compileSdkVersion 20
     buildToolsVersion "20.0.0"
@@ -23,6 +23,13 @@ android {
         abortOnError false
     }
 
+}
+
+
+uploadArchives {
+    repositories.mavenDeployer {
+        repository(url: "file:///Users/akshay/CodeBase/hatchttp_maven_repo")
+    }
 }
 
 dependencies {
