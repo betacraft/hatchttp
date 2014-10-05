@@ -7,11 +7,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.rainingclouds.hatchttp.HatcHttpMethod;
 import com.rainingclouds.hatchttp.HatcHttpRequest;
-import com.rainingclouds.hatchttp.HatcHttpTask;
-
-
+import com.rainingclouds.hatchttp.HatcHttpRequestListener;
 
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -30,29 +27,23 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         mHandler = new Handler();
         setContentView(R.layout.activity_my);
-        mResponseTextView= (TextView)findViewById(R.id.response_text_view);
-        new Thread(new Runnable() {
+        mResponseTextView = (TextView) findViewById(R.id.response_text_view);
+        HatcHttpRequest.GET("http://google.co.in").execute(new HatcHttpRequestListener() {
             @Override
-            public void run() {
-                HatcHttpRequest.prepareFor(HatcHttpMethod.GET,"http://google.co.in").execute(new HatcHttpTask
-                        .HatcHttpRequestListener() {
+            public void onComplete(HttpResponseStatus status, HttpHeaders headers, final String response) {
+                mHandler.post(new Runnable() {
                     @Override
-                    public void onComplete(HttpResponseStatus status, HttpHeaders headers, final String response) {
-                        mHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                            mResponseTextView.setText(response);
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onException(Throwable throwable) {
-
+                    public void run() {
+                        mResponseTextView.setText(response);
                     }
                 });
             }
-        }).start();
+
+            @Override
+            public void onException(Throwable throwable) {
+
+            }
+        });
 
 
     }

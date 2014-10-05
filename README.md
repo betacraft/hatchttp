@@ -2,14 +2,13 @@
 
 ####NOTE: README is not quite upto date. Currently this library is under heavy development so I recommend not to use it in live projects unless this message is striked out.
 
-HatcHttp is a very simple and straightforward library for performing HTTP call inside your Android app. Architecture 
-is very similar to async tasks, but HatcHttp would make your code modular and easier to maintain.
+HatcHttp is a very simple and straightforward library for performing HTTP call inside your Android app. This library
+is based on Netty
  
 ## Features
 
 1. Based on Java NIO 
 2. Asynchronous API calls, runs on a separate thread pool (ExecutorService)
-3. Supports Post, JSONPost, Put, Delete, Get (Patch and other methods are in next release)
 
 ## What is different ?
 

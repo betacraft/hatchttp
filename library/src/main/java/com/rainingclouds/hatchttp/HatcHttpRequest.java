@@ -1,110 +1,92 @@
 package com.rainingclouds.hatchttp;
 
-import android.util.Log;
-
 import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.HttpHeaders;
-import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.QueryStringEncoder;
 
 /**
- * HatcHttp request a wrapper over HttpRequest
- * Created by akshay on 25/08/14.
+ * This will be the only class available outside
+ * The single entry of all the functionality supported by this library
+ * Created by akshay on 05/10/14.
  */
-public final class HatcHttpRequest {
+public class HatcHttpRequest {
+
     /**
      * TAG for logging
      */
-    private static final String TAG = "###HatcHttpRequst###";
+    private static final String TAG = "###HatcHttpRequest###";
     /**
-     * Encoder for params
+     * Underlying http request
+     */
+    private FullHttpRequest mRequest;
+    /**
+     * Query string encoder
      */
     private QueryStringEncoder mQueryStringEncoder;
+
+    private HatcHttpRequestListener mListener;
+
     /**
-     * Underlying request
+     * Constructor
+     *
+     * @param url url for the request
      */
-    private FullHttpRequest mHttpRequest;
-    private NettyHttpClient.NettyHttpClientListener mClientChannelListener;
-    private HatcHttpRequestHandler mRequestHandler;
-
-    {
-       mClientChannelListener = new NettyHttpClient.NettyHttpClientListener
-                () {
-            @Override
-            public void connectionFailed(Throwable throwable) {
-                Log.d(TAG, "Connection failed", throwable);
-            }
-
-            @Override
-            public void connectionSuccess() {
-                Log.d(TAG, "Connection successful");
-            }
-        };
-    }
-
-    private HatcHttpRequest(final HatcHttpMethod method, final String url){
-        mHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1,method.getHttpMethod(),url);
+    private HatcHttpRequest(final String url, final HttpMethod method) {
+        mRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_0, method, url);
         mQueryStringEncoder = new QueryStringEncoder(url);
     }
 
-    public HatcHttpRequest addHeader(final String name, final Object value){
-        mHttpRequest.headers().add(name,value);
+
+    public static HatcHttpRequest GET(final String url) {
+        return new HatcHttpRequest(url, HttpMethod.GET);
+    }
+
+    public static HatcHttpRequest POST(final String url) {
+        return new HatcHttpRequest(url, HttpMethod.POST);
+    }
+
+    public static HatcHttpRequest PUT(final String url) {
+        return new HatcHttpRequest(url, HttpMethod.PUT);
+    }
+
+    public static HatcHttpRequest DELETE(final String url) {
+        return new HatcHttpRequest(url, HttpMethod.DELETE);
+    }
+
+    public static HatcHttpRequest PATCH(final String url) {
+        return new HatcHttpRequest(url, HttpMethod.PATCH);
+    }
+
+    public HatcHttpRequest addHeader(final String name, final Object value) {
+        mRequest.headers().add(name, value);
         return this;
     }
 
-    public HatcHttpRequest addParam(final String name, final String value){
-        mQueryStringEncoder.addParam(name,value);
+    public HatcHttpRequest addParam(final String name, final String value) {
+        mQueryStringEncoder.addParam(name, value);
         return this;
     }
 
-    public HatcHttpRequest setContent(final String content){
-        mHttpRequest.content().writeBytes(content.getBytes());
-        addHeader("Content-Length",content.length());
+    public HatcHttpRequest setContent(final String content) {
+        mRequest.content().writeBytes(content.getBytes());
+        addHeader("Content-Length", content.length());
         return this;
     }
 
-    String getUrl(){
-        return mHttpRequest.getUri();
+
+    String getUrl() {
+        return mRequest.getUri();
     }
 
-
-
-    HttpRequest getHttpRequest(){
-        return mHttpRequest;
+    HatcHttpRequestListener getListener() {
+        return mListener;
     }
 
-    HatcHttpOptions getOptions(){
-        return HatcHttp.getInstance().getOptions();
+    public <T> void execute(final HatcHttpRequestListener hatcHttpRequestListener) {
+        mListener = hatcHttpRequestListener;
+        HatcHttpClient.getFor(this).writeRequest(mRequest);
     }
 
-    NettyHttpClient.NettyHttpClientListener getClientChannelListener(){
-        return mClientChannelListener;
-    }
-
-    HatcHttpRequestHandler getRequestHandler(){
-        return mRequestHandler;
-    }
-
-    public HttpHeaders getHeaders(){
-        return mHttpRequest.headers();
-    }
-
-    public static HatcHttpRequest prepareFor(final HatcHttpMethod method,
-                                             final String url) {
-        return new HatcHttpRequest(method,url);
-    }
-
-
-    public void execute(final HatcHttpTask.HatcHttpRequestListener clientHandlerListener){
-        try {
-            mHttpRequest.setUri(mQueryStringEncoder.toUri().toASCIIString());
-        }catch (Exception e){
-            clientHandlerListener.onException(e);
-        }
-        mRequestHandler = new HatcHttpRequestHandler(clientHandlerListener);
-        NettyHttpClient httpClient =  NettyHttpClient.getFor(this);
-        httpClient.writeRequest(mHttpRequest);
-    }
 }
