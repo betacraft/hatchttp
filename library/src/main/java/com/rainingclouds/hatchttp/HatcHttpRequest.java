@@ -25,7 +25,9 @@ public class HatcHttpRequest {
      * Query string encoder
      */
     private QueryStringEncoder mQueryStringEncoder;
-
+    /**
+     * HatcHttp request listener
+     */
     private HatcHttpRequestListener mListener;
 
     /**
@@ -38,37 +40,87 @@ public class HatcHttpRequest {
         mQueryStringEncoder = new QueryStringEncoder(url);
     }
 
-
+    /**
+     * GET request
+     *
+     * @param url url for the request
+     * @return current instance of @HatcHttpRequest
+     */
     public static HatcHttpRequest GET(final String url) {
         return new HatcHttpRequest(url, HttpMethod.GET);
     }
 
+    /**
+     * POST request
+     *
+     * @param url url for the request
+     * @return current instance of @HatcHttpRequest
+     */
     public static HatcHttpRequest POST(final String url) {
         return new HatcHttpRequest(url, HttpMethod.POST);
     }
 
+    /**
+     * PUT request
+     *
+     * @param url url for the request
+     * @return current instance of @HatcHttpRequest
+     */
     public static HatcHttpRequest PUT(final String url) {
         return new HatcHttpRequest(url, HttpMethod.PUT);
     }
 
+    /**
+     * DELETE request
+     *
+     * @param url url for the request
+     * @return current instance of @HatcHttpRequest
+     */
     public static HatcHttpRequest DELETE(final String url) {
         return new HatcHttpRequest(url, HttpMethod.DELETE);
     }
 
+    /**
+     * PATCH request
+     *
+     * @param url url for the request
+     * @return current instance of @HatcHttpRequest
+     */
     public static HatcHttpRequest PATCH(final String url) {
         return new HatcHttpRequest(url, HttpMethod.PATCH);
     }
 
+    /**
+     * To add header in your request
+     *
+     * @param name  name of the header
+     * @param value value of the header
+     * @return current instance of @HatcHttpRequest
+     */
     public HatcHttpRequest addHeader(final String name, final Object value) {
         mRequest.headers().add(name, value);
         return this;
     }
 
+    /**
+     * To add param
+     *
+     * @param name  name of the param
+     * @param value value of the param
+     * @return current instance of @HatcHttpRequest
+     */
     public HatcHttpRequest addParam(final String name, final String value) {
         mQueryStringEncoder.addParam(name, value);
         return this;
     }
 
+
+    /**
+     * To set content of the current request
+     *
+     * @param content content
+     * @return current instance of @HatcHttpRequest
+     */
     public HatcHttpRequest setContent(final String content) {
         mRequest.content().writeBytes(content.getBytes());
         addHeader("Content-Length", content.length());
@@ -84,9 +136,19 @@ public class HatcHttpRequest {
         return mListener;
     }
 
-    public <T> void execute(final HatcHttpRequestListener hatcHttpRequestListener) {
-        mListener = hatcHttpRequestListener;
-        HatcHttpClient.getFor(this).writeRequest(mRequest);
+    /**
+     * To execute the request
+     *
+     * @param hatcHttpRequestListener listener for this request
+     */
+    public void execute(final HatcHttpRequestListener hatcHttpRequestListener) {
+        HatcHttpExecutor.Submit(new Runnable() {
+            @Override
+            public void run() {
+                mListener = hatcHttpRequestListener;
+                HatcHttpClient.getFor(HatcHttpRequest.this).writeRequest(mRequest);
+            }
+        });
     }
 
 }

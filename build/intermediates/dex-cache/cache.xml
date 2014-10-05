@@ -24,7 +24,7 @@
         jar="/Users/akshay/CodeBase/hatchttp/app/build/intermediates/exploded-aar/hatchttp/library/unspecified/classes.jar"
         jumboMode="false"
         revision="20.0.0"
-        sha1="691844b76ee9826240230b467bb60be4ff2ef6ab"/>
+        sha1="66b044b99364f5ee5a9a65528584edaf19c9847a"/>
     <item
         dex="/Users/akshay/CodeBase/hatchttp/app/build/intermediates/pre-dexed/debug/netty-all-4.0.23.Final-fbf7d5b951449f1d3f58d8053fb5bb06698f781c.jar"
         jar="/Users/akshay/.gradle/caches/modules-2/files-2.1/io.netty/netty-all/4.0.23.Final/294104aaf1781d6a56a07d561e792c5d0c95f45/netty-all-4.0.23.Final.jar"
