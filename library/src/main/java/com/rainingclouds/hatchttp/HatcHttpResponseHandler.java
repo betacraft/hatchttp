@@ -16,7 +16,7 @@ import io.netty.util.CharsetUtil;
  * This handler handles the data coming from the server
  * Created by akshay on 05/10/14.
  */
-public class HatcHttpResponseHandler extends SimpleChannelInboundHandler<HttpObject> {
+class HatcHttpResponseHandler extends SimpleChannelInboundHandler<HttpObject> {
 
     private static final String TAG = "###HatcHttpResponseHandler###";
     private boolean readingChunks;
@@ -50,7 +50,7 @@ public class HatcHttpResponseHandler extends SimpleChannelInboundHandler<HttpObj
                 } else {
                     Log.d(TAG, "End of content");
                 }
-                Log.d(TAG,"Got response as:" + mResponse.toString());
+                Log.d(TAG, "Got response as:" + mResponse.toString());
                 readingChunks = false;
                 mClientHandlerListener.onComplete(mResponseStatus, mHttpHeaders, mResponse.toString());
                 ctx.channel().close();

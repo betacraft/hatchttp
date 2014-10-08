@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
  * Executors of HatcHttp Library
  * Created by akshay on 05/10/14.
  */
-public class HatcHttpExecutor {
+class HatcHttpExecutor {
 
     private static ExecutorService executorService = EfficientThreadPoolExecutor.get(2, 5, 1, TimeUnit.MINUTES, 20,
             "###HatcHttpWorker###");

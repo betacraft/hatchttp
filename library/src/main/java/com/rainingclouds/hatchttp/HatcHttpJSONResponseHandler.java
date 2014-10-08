@@ -18,7 +18,7 @@ import io.netty.util.CharsetUtil;
  * This handler handles the data coming from the server
  * Created by akshay on 05/10/14.
  */
-public class HatcHttpJSONResponseHandler extends SimpleChannelInboundHandler<HttpObject> {
+class HatcHttpJSONResponseHandler extends SimpleChannelInboundHandler<HttpObject> {
 
     private static final String TAG = "###HatcHttpResponseHandler###";
     private boolean readingChunks;
@@ -42,6 +42,12 @@ public class HatcHttpJSONResponseHandler extends SimpleChannelInboundHandler<Htt
             HttpResponse response = (HttpResponse) msg;
             mResponseStatus = response.getStatus();
             mHttpHeaders = response.headers();
+            if(!mHttpHeaders.contains("Content-Type")){
+                throw new IllegalStateException("Content-Type is not available in header");
+            }
+            if(!mHttpHeaders.get("Content-Type").equalsIgnoreCase("application/json")){
+                throw new IllegalStateException("Content-Type is not application/json");
+            }
         }
         if (msg instanceof HttpContent) {
             HttpContent chunk = (HttpContent) msg;
@@ -52,7 +58,7 @@ public class HatcHttpJSONResponseHandler extends SimpleChannelInboundHandler<Htt
                 } else {
                     Log.d(TAG, "End of content");
                 }
-                Log.d(TAG,"Got response as:" + mResponse.toString());
+                Log.d(TAG, "Got response as:" + mResponse.toString());
                 readingChunks = false;
                 mClientHandlerListener.onComplete(mResponseStatus, mHttpHeaders, new JSONObject(mResponse.toString()));
                 ctx.channel().close();
