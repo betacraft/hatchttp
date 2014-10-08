@@ -1,5 +1,6 @@
 package com.rainingclouds.hatchttp;
 
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
@@ -26,9 +27,9 @@ public class HatcHttpRequest {
      */
     private QueryStringEncoder mQueryStringEncoder;
     /**
-     * HatcHttp request listener
+     * HatcHttp request response handler
      */
-    private HatcHttpRequestListener mListener;
+    private SimpleChannelInboundHandler mResponseHandler;
 
     /**
      * Constructor
@@ -132,9 +133,7 @@ public class HatcHttpRequest {
         return mRequest.getUri();
     }
 
-    HatcHttpRequestListener getListener() {
-        return mListener;
-    }
+    SimpleChannelInboundHandler getResponseHandler(){return mResponseHandler;}
 
     /**
      * To execute the request
@@ -145,10 +144,21 @@ public class HatcHttpRequest {
         HatcHttpExecutor.Submit(new Runnable() {
             @Override
             public void run() {
-                mListener = hatcHttpRequestListener;
+                mResponseHandler = new HatcHttpResponseHandler(hatcHttpRequestListener);
                 HatcHttpClient.getFor(HatcHttpRequest.this).writeRequest(mRequest);
             }
         });
     }
+
+    public void execute(final HatcHttpJSONListener hatcHttpJSONListener){
+        HatcHttpExecutor.Submit(new Runnable() {
+            @Override
+            public void run() {
+                mResponseHandler = new HatcHttpJSONResponseHandler(hatcHttpJSONListener);
+                HatcHttpClient.getFor(HatcHttpRequest.this).writeRequest(mRequest);
+            }
+        });
+    }
+
 
 }

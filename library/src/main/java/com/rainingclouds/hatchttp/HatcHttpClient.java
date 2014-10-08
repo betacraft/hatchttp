@@ -59,7 +59,7 @@ class HatcHttpClient {
                         final ChannelPipeline pipeline = ch.pipeline();
                         pipeline.addLast(new HttpClientCodec());
                         pipeline.addLast(new HttpContentDecompressor());
-                        pipeline.addLast(new HatcHttpResponseHandler(hatcHttpRequest.getListener()));
+                        pipeline.addLast(hatcHttpRequest.getResponseHandler());
                     }
                 });
 
