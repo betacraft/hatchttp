@@ -1,17 +1,12 @@
 package com.rainingclouds.hatchttp;
 
-import android.util.Log;
+import com.ning.http.client.AsyncCompletionHandler;
+import com.ning.http.client.RequestBuilder;
+import com.ning.http.client.Response;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import org.json.JSONObject;
 
-import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.DefaultFullHttpRequest;
-import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.HttpHeaders;
-import io.netty.handler.codec.http.HttpMethod;
-import io.netty.handler.codec.http.HttpVersion;
-import io.netty.handler.codec.http.QueryStringEncoder;
+import java.io.IOException;
 
 /**
  * This will be the only class available outside
@@ -24,39 +19,13 @@ public class HatcHttpRequest {
      * TAG for logging
      */
     private static final String TAG = "###HatcHttpRequest###";
-    /**
-     * Underlying http request
-     */
-    private FullHttpRequest mRequest;
-    /**
-     * Query string encoder
-     */
-    private QueryStringEncoder mQueryStringEncoder;
-    /**
-     * HatcHttp request response handler
-     */
-    private SimpleChannelInboundHandler mResponseHandler;
-
-    private URI mUri;
+    private RequestBuilder mRequestBuilder;
 
 
-    /**
-     * Constructor
-     *
-     * @param url url for the request
-     */
-    private HatcHttpRequest(final String url, final HttpMethod method) {
-        try {
-            mUri = new URI(url);
-            Log.d(TAG, "Raw path is:" + new URI(url).getRawPath() + " url is " + url);
-            mRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, method, mUri.getRawPath());
-            mRequest.headers().set(HttpHeaders.Names.CACHE_CONTROL, "no-cache");
-        } catch (URISyntaxException e) {
-            mRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, method, url);
-            Log.e(TAG, "URI-error", e);
-        }
-
-        mQueryStringEncoder = new QueryStringEncoder(url);
+    private HatcHttpRequest(final String url, final String method) {
+        mRequestBuilder = new RequestBuilder()
+                .setUrl(url)
+                .setMethod(method);
     }
 
     /**
@@ -66,7 +35,7 @@ public class HatcHttpRequest {
      * @return current instance of @HatcHttpRequest
      */
     public static HatcHttpRequest GET(final String url) {
-        return new HatcHttpRequest(url, HttpMethod.GET);
+        return new HatcHttpRequest(url, "GET");
     }
 
     /**
@@ -76,7 +45,7 @@ public class HatcHttpRequest {
      * @return current instance of @HatcHttpRequest
      */
     public static HatcHttpRequest POST(final String url) {
-        return new HatcHttpRequest(url, HttpMethod.POST);
+        return new HatcHttpRequest(url, "POST");
     }
 
     /**
@@ -86,7 +55,7 @@ public class HatcHttpRequest {
      * @return current instance of @HatcHttpRequest
      */
     public static HatcHttpRequest PUT(final String url) {
-        return new HatcHttpRequest(url, HttpMethod.PUT);
+        return new HatcHttpRequest(url, "PUT");
     }
 
     /**
@@ -96,7 +65,7 @@ public class HatcHttpRequest {
      * @return current instance of @HatcHttpRequest
      */
     public static HatcHttpRequest DELETE(final String url) {
-        return new HatcHttpRequest(url, HttpMethod.DELETE);
+        return new HatcHttpRequest(url, "DELETE");
     }
 
     /**
@@ -106,7 +75,7 @@ public class HatcHttpRequest {
      * @return current instance of @HatcHttpRequest
      */
     public static HatcHttpRequest PATCH(final String url) {
-        return new HatcHttpRequest(url, HttpMethod.PATCH);
+        return new HatcHttpRequest(url, "PATCH");
     }
 
     /**
@@ -116,8 +85,8 @@ public class HatcHttpRequest {
      * @param value value of the header
      * @return current instance of @HatcHttpRequest
      */
-    public HatcHttpRequest addHeader(final String name, final Object value) {
-        mRequest.headers().set(name, value);
+    public HatcHttpRequest addHeader(final String name, final String value) {
+        mRequestBuilder.addHeader(name, value);
         return this;
     }
 
@@ -129,7 +98,7 @@ public class HatcHttpRequest {
      * @return current instance of @HatcHttpRequest
      */
     public HatcHttpRequest addParam(final String name, final String value) {
-        mQueryStringEncoder.addParam(name, value);
+        mRequestBuilder.addParameter(name, value);
         return this;
     }
 
@@ -141,19 +110,10 @@ public class HatcHttpRequest {
      * @return current instance of @HatcHttpRequest
      */
     public HatcHttpRequest setContent(final String content) {
-        mRequest.content().writeBytes(content.getBytes());
-        addHeader("Content-Length", content.length());
+        mRequestBuilder.setBody(content);
         return this;
     }
 
-
-    URI getUri() {
-        return mUri;
-    }
-
-    SimpleChannelInboundHandler getResponseHandler() {
-        return mResponseHandler;
-    }
 
     /**
      * To execute the request
@@ -164,10 +124,21 @@ public class HatcHttpRequest {
         HatcHttpExecutor.Submit(new Runnable() {
             @Override
             public void run() {
-                mResponseHandler = new HatcHttpResponseHandler(hatcHttpRequestListener);
                 try {
-                    HatcHttpClient.getFor(HatcHttpRequest.this).writeRequest(mRequest);
-                } catch (InterruptedException exception) {
+                    HatcHttpClient.get().executeRequest(mRequestBuilder.build(), new AsyncCompletionHandler<Object>() {
+                        @Override
+                        public Object onCompleted(final Response response) throws Exception {
+                            hatcHttpRequestListener.onComplete(response.getStatusCode(), response.getResponseBody());
+                            return null;
+                        }
+
+                        @Override
+                        public void onThrowable(final Throwable t) {
+                            super.onThrowable(t);
+                            hatcHttpRequestListener.onException(t);
+                        }
+                    });
+                } catch (IOException exception) {
                     hatcHttpRequestListener.onException(exception);
                 }
             }
@@ -178,10 +149,21 @@ public class HatcHttpRequest {
         HatcHttpExecutor.Submit(new Runnable() {
             @Override
             public void run() {
-                mResponseHandler = new HatcHttpJSONResponseHandler(hatcHttpJSONListener);
                 try {
-                    HatcHttpClient.getFor(HatcHttpRequest.this).writeRequest(mRequest);
-                } catch (InterruptedException exception) {
+                    HatcHttpClient.get().executeRequest(mRequestBuilder.build(), new AsyncCompletionHandler<Object>() {
+                        @Override
+                        public Object onCompleted(final Response response) throws Exception {
+                            hatcHttpJSONListener.onComplete(response.getStatusCode(), new JSONObject(response.getResponseBody()));
+                            return null;
+                        }
+
+                        @Override
+                        public void onThrowable(final Throwable t) {
+                            super.onThrowable(t);
+                            hatcHttpJSONListener.onException(t);
+                        }
+                    });
+                } catch (IOException exception) {
                     hatcHttpJSONListener.onException(exception);
                 }
             }

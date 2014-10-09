@@ -10,9 +10,6 @@ import android.widget.TextView;
 import com.rainingclouds.hatchttp.HatcHttpRequest;
 import com.rainingclouds.hatchttp.HatcHttpRequestListener;
 
-import io.netty.handler.codec.http.HttpHeaders;
-import io.netty.handler.codec.http.HttpResponseStatus;
-
 
 public class MainActivity extends ActionBarActivity {
 
@@ -29,11 +26,11 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_my);
         mResponseTextView = (TextView) findViewById(R.id.response_text_view);
         HatcHttpRequest.GET("http://guarded-wave-7209.herokuapp.com")
-                .addHeader("Content-Type","application/json")
-                .addHeader("auth_key","801a32e3-2711-491c-51b8-c3daef868f0f")
-                .addHeader("Accept","application/json").execute(new HatcHttpRequestListener() {
+                .addHeader("Content-Type", "application/json")
+                .addHeader("auth_key", "801a32e3-2711-491c-51b8-c3daef868f0f")
+                .addHeader("Accept", "application/json").execute(new HatcHttpRequestListener() {
             @Override
-            public void onComplete(HttpResponseStatus status, HttpHeaders headers, final String response) {
+            public void onComplete(int status, final String response) {
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
