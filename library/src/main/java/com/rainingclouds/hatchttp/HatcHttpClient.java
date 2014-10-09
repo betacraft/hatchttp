@@ -1,11 +1,9 @@
 package com.rainingclouds.hatchttp;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import android.util.Log;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -14,6 +12,8 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpContentDecompressor;
 import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 
 /**
  * NettyHttp Client
@@ -23,23 +23,14 @@ class HatcHttpClient {
 
     private static final String TAG = "###NettyHttpClient###";
     private Channel mChannel;
+    private static final NioEventLoopGroup NIO_EVENT_LOOP_GROUP = new NioEventLoopGroup(1);
 
-    interface NettyHttpClientListener {
-        void connectionFailed(final Throwable throwable);
+    private HatcHttpClient(final HatcHttpRequest hatcHttpRequest) throws InterruptedException {
 
-        void connectionSuccess();
-    }
 
-    private HatcHttpClient(final HatcHttpRequest hatcHttpRequest) {
-        final URI uri;
-        try {
-            uri = new URI(hatcHttpRequest.getUrl());
-        } catch (URISyntaxException ex) {
-            throw new IllegalStateException("URL passed is illegal", ex);
-        }
-        final String scheme = uri.getScheme() == null ? "http" : uri.getScheme();
-        final String host = uri.getHost() == null ? "127.0.0.1" : uri.getHost();
-        int port = uri.getPort();
+        final String scheme = hatcHttpRequest.getUri().getScheme() == null ? "http" : hatcHttpRequest.getUri().getScheme();
+        final String host = hatcHttpRequest.getUri().getHost() == null ? "127.0.0.1" : hatcHttpRequest.getUri().getHost();
+        int port = hatcHttpRequest.getUri().getPort();
         if (port == -1) {
             if ("http".equalsIgnoreCase(scheme)) {
                 port = 80;
@@ -51,8 +42,9 @@ class HatcHttpClient {
             throw new IllegalStateException("Only HTTP(S) is supported");
         }
 
+
         final Bootstrap bootstrap = new Bootstrap().channel(NioSocketChannel.class)
-                .group(new NioEventLoopGroup(3))
+                .group(NIO_EVENT_LOOP_GROUP)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(final SocketChannel ch) throws Exception {
@@ -60,26 +52,21 @@ class HatcHttpClient {
                         pipeline.addLast(new HttpClientCodec());
                         pipeline.addLast(new HttpContentDecompressor());
                         pipeline.addLast(hatcHttpRequest.getResponseHandler());
+                        pipeline.addLast(new LoggingHandler(LogLevel.TRACE));
                     }
                 });
-
-        final ChannelFuture channelFuture = bootstrap.connect(host, port).syncUninterruptibly();
-        mChannel = channelFuture.channel();
+        Log.d(TAG, "Connecting to " + host + ":" + port);
+        mChannel = bootstrap.connect(host, port).sync().channel();
+        Log.d(TAG, "Channel connected");
     }
 
-    ChannelFuture writeRequest(final HttpRequest request) {
-        ChannelFuture future = mChannel.write(request);
-        mChannel.flush();
-        return future;
+    void writeRequest(final HttpRequest request) {
+        Log.d(TAG, "Writing request " + request.getUri());
+        mChannel.writeAndFlush(request);
+
     }
 
-
-    static HatcHttpClient getFor(final HatcHttpRequest hatcHttpRequest) {
+    static HatcHttpClient getFor(final HatcHttpRequest hatcHttpRequest) throws InterruptedException {
         return new HatcHttpClient(hatcHttpRequest);
     }
-
-    void close() {
-        mChannel.close();
-    }
-
 }

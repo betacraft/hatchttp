@@ -42,15 +42,18 @@ class HatcHttpJSONResponseHandler extends SimpleChannelInboundHandler<HttpObject
             HttpResponse response = (HttpResponse) msg;
             mResponseStatus = response.getStatus();
             mHttpHeaders = response.headers();
-            if(!mHttpHeaders.contains("Content-Type")){
+            if(!mHttpHeaders.contains(HttpHeaders.Names.CONTENT_TYPE)){
+                Log.e(TAG,"No header for content type");
                 throw new IllegalStateException("Content-Type is not available in header");
             }
-            if(!mHttpHeaders.get("Content-Type").equalsIgnoreCase("application/json")){
+            if(!mHttpHeaders.get(HttpHeaders.Names.CONTENT_TYPE).equalsIgnoreCase("application/json")){
+                Log.e(TAG,"Content-Type is not application/json");
                 throw new IllegalStateException("Content-Type is not application/json");
             }
         }
         if (msg instanceof HttpContent) {
             HttpContent chunk = (HttpContent) msg;
+            Log.d(TAG,chunk.toString());
             mResponse.append(chunk.content().toString(CharsetUtil.UTF_8));
             if (chunk instanceof LastHttpContent) {
                 if (readingChunks) {

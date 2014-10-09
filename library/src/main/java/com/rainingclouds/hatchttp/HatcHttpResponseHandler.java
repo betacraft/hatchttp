@@ -40,10 +40,12 @@ class HatcHttpResponseHandler extends SimpleChannelInboundHandler<HttpObject> {
             HttpResponse response = (HttpResponse) msg;
             mResponseStatus = response.getStatus();
             mHttpHeaders = response.headers();
+            Log.d(TAG, "Got status as " + response.getStatus() + " and headers as " + mHttpHeaders.toString());
         }
         if (msg instanceof HttpContent) {
             HttpContent chunk = (HttpContent) msg;
             mResponse.append(chunk.content().toString(CharsetUtil.UTF_8));
+            Log.d(TAG, chunk.toString());
             if (chunk instanceof LastHttpContent) {
                 if (readingChunks) {
                     Log.d(TAG, "End of content");

@@ -1,8 +1,14 @@
 package com.rainingclouds.hatchttp;
 
+import android.util.Log;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.QueryStringEncoder;
@@ -31,13 +37,25 @@ public class HatcHttpRequest {
      */
     private SimpleChannelInboundHandler mResponseHandler;
 
+    private URI mUri;
+
+
     /**
      * Constructor
      *
      * @param url url for the request
      */
     private HatcHttpRequest(final String url, final HttpMethod method) {
-        mRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_0, method, url);
+        try {
+            mUri = new URI(url);
+            Log.d(TAG, "Raw path is:" + new URI(url).getRawPath() + " url is " + url);
+            mRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, method, mUri.getRawPath());
+            mRequest.headers().set(HttpHeaders.Names.CACHE_CONTROL, "no-cache");
+        } catch (URISyntaxException e) {
+            mRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, method, url);
+            Log.e(TAG, "URI-error", e);
+        }
+
         mQueryStringEncoder = new QueryStringEncoder(url);
     }
 
@@ -99,7 +117,7 @@ public class HatcHttpRequest {
      * @return current instance of @HatcHttpRequest
      */
     public HatcHttpRequest addHeader(final String name, final Object value) {
-        mRequest.headers().add(name, value);
+        mRequest.headers().set(name, value);
         return this;
     }
 
@@ -129,11 +147,13 @@ public class HatcHttpRequest {
     }
 
 
-    String getUrl() {
-        return mRequest.getUri();
+    URI getUri() {
+        return mUri;
     }
 
-    SimpleChannelInboundHandler getResponseHandler(){return mResponseHandler;}
+    SimpleChannelInboundHandler getResponseHandler() {
+        return mResponseHandler;
+    }
 
     /**
      * To execute the request
@@ -145,20 +165,26 @@ public class HatcHttpRequest {
             @Override
             public void run() {
                 mResponseHandler = new HatcHttpResponseHandler(hatcHttpRequestListener);
-                HatcHttpClient.getFor(HatcHttpRequest.this).writeRequest(mRequest);
+                try {
+                    HatcHttpClient.getFor(HatcHttpRequest.this).writeRequest(mRequest);
+                } catch (InterruptedException exception) {
+                    hatcHttpRequestListener.onException(exception);
+                }
             }
         });
     }
 
-    public void execute(final HatcHttpJSONListener hatcHttpJSONListener){
+    public void execute(final HatcHttpJSONListener hatcHttpJSONListener) {
         HatcHttpExecutor.Submit(new Runnable() {
             @Override
             public void run() {
                 mResponseHandler = new HatcHttpJSONResponseHandler(hatcHttpJSONListener);
-                HatcHttpClient.getFor(HatcHttpRequest.this).writeRequest(mRequest);
+                try {
+                    HatcHttpClient.getFor(HatcHttpRequest.this).writeRequest(mRequest);
+                } catch (InterruptedException exception) {
+                    hatcHttpJSONListener.onException(exception);
+                }
             }
         });
     }
-
-
 }
