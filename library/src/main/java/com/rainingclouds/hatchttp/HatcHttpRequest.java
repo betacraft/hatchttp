@@ -98,7 +98,7 @@ public class HatcHttpRequest {
      * @return current instance of @HatcHttpRequest
      */
     public HatcHttpRequest addParam(final String name, final String value) {
-        mRequestBuilder.addParameter(name, value);
+        mRequestBuilder.addQueryParameter(name, value);
         return this;
     }
 
