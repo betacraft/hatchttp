@@ -5,7 +5,7 @@ is based on Netty
  
 ## Features
 
-1. Based on Java NIO 
+1. Based on Java NIO (thanks to netty and asynchttp)
 2. Asynchronous API calls, runs on a separate thread pool (ExecutorService)
 
 ## What is different ?
@@ -14,26 +14,17 @@ is based on Netty
 
 This version of HatchHttp is based on Netty and leverage the advantage of NIO.
 
- 
 ## How to use ?
 
-1. Clone this repo
-2. Perform gradle build
-3. Get corresponding .aar file in build folder of the Library project
-4. Create a new folder in your project (on the level of assets) aars
-5. Copy the built aar into this folder
-6. Add following as repo in your build gradle
+1. Add the repository
 ```gradle
- repositories {
-        ...
-        flatDir {
-            dirs 'aars'
-        }
+    maven {
+            url 'https://github.com/RainingClouds/hatchttp_maven_repo/raw/master/'
     }
 ```
-And add following dependency
+2. Add the dependency
 ```gradle
-compile(name: 'hatchttp', ext: 'aar')
+    compile 'hatchttp:library:1.2.2'
 ```
 Add following permissions in your AndroidManifest.xml
 ```xml
@@ -41,44 +32,32 @@ Add following permissions in your AndroidManifest.xml
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 ```
  
-## Architecture
-
-### HatcHttpRequest
-
-This is the main class which has to be used by the developers.
-
-### HatcHttpClient
-
-It's a netty client which connects to the server and does the socket level communication.
-
-### HatcHttpExecutor
-
-It's an executor service that maintains a thread pool for performing HatcHttp operations.
-
-### HatcHttpRequestListener
-
-This has to be passed while executing the HatcHttpRequest to receive the status of the operation.
-
+### Code
+Example code for getting Google Home Page
 ```
-public interface HatcHttpRequestListener {
-    void onComplete(final HttpResponseStatus status, final HttpHeaders headers,final String response);
-    void onException(final Throwable throwable);
-}
+    HatcHttpRequest.GET("http://www.google.com")
+                .addHeader("Accept", "text/html")
+                .execute(new HatcHttpRequestListener() {
+            @Override
+            public void onComplete(int status, final String response) {
+
+            }
+
+            @Override
+            public void onException(Throwable throwable) {
+
+            }
+        });
 ```
 
-### HatcHttpResponseHandler
+If you want encoded json response use HatcHttpJSONListener which has following listener design.
+```
+    public interface HatcHttpJSONListener {
+        void onComplete(final int status, final JSONObject response);
 
-This is a netty SimpleChannelInboundHandler to read the chunks of the data and construct the entire response to push
-it to the app.
-
-## Components
-
-
-# Future scope
-
-* [ ] Add inbuilt JSON parser (for now we can use GSON or Jackson)
-* [ ] Request Pooling
-* [ ] Connection Pooling
+        void onException(final Throwable throwable);
+    }
+```
 
 
 # Developer

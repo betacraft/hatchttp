@@ -25,10 +25,9 @@ public class MainActivity extends ActionBarActivity {
         mHandler = new Handler();
         setContentView(R.layout.activity_my);
         mResponseTextView = (TextView) findViewById(R.id.response_text_view);
-        HatcHttpRequest.GET("http://guarded-wave-7209.herokuapp.com")
-                .addHeader("Content-Type", "application/json")
-                .addHeader("auth_key", "801a32e3-2711-491c-51b8-c3daef868f0f")
-                .addHeader("Accept", "application/json").execute(new HatcHttpRequestListener() {
+        HatcHttpRequest.GET("http://ww.google.com")
+                .addHeader("Accept", "text/html")
+                .execute(new HatcHttpRequestListener() {
             @Override
             public void onComplete(int status, final String response) {
                 mHandler.post(new Runnable() {
