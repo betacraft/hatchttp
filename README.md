@@ -34,7 +34,7 @@ Add following permissions in your AndroidManifest.xml
  
 ### Code
 Example code for getting Google Home Page
-```
+```java
     HatcHttpRequest.GET("http://www.google.com")
                 .addHeader("Accept", "text/html")
                 .execute(new HatcHttpRequestListener() {
@@ -51,10 +51,9 @@ Example code for getting Google Home Page
 ```
 
 If you want encoded json response use HatcHttpJSONListener which has following listener design.
-```
+```java
     public interface HatcHttpJSONListener {
         void onComplete(final int status, final JSONObject response);
-
         void onException(final Throwable throwable);
     }
 ```
