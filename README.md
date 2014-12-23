@@ -14,7 +14,7 @@ We were facing an issue related with 65k+ method issue. So now this library uses
 1. Asynchronous API calls, runs on a separate thread pool (ExecutorService)
 2. Uses network library used inside the Android framework.
 
-## What is different ?
+~~## What is different ?~~
 
 ~~### Based on Netty~~
 
