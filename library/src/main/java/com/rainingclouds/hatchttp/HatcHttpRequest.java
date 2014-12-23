@@ -1,5 +1,7 @@
 package com.rainingclouds.hatchttp;
 
+import android.util.Log;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -131,14 +133,17 @@ public class HatcHttpRequest {
      * @param hatcHttpRequestListener listener for this request
      */
     public void execute(final HatcHttpRequestListener hatcHttpRequestListener) {
+        Log.d(TAG, "Calling =>" + mUrl);
         final Request<String> request = new StringRequest(mMethod, mUrl, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
+                Log.d(TAG, mUrl + ":" + response);
                 hatcHttpRequestListener.onComplete(200, response);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, mUrl + ":" + error.getMessage(), error);
                 hatcHttpRequestListener.onException(error);
             }
         }) {
@@ -161,10 +166,12 @@ public class HatcHttpRequest {
     }
 
     public void execute(final HatcHttpJSONListener hatcHttpJSONListener) {
+        Log.d(TAG, "Calling =>" + mUrl);
         final Request<String> request = new StringRequest(mMethod, mUrl, new Response.Listener<String>() {
             @Override
             public void onResponse(final String response) {
-                JSONObject responseObject= null;
+                Log.d(TAG, mUrl + ":" + response);
+                JSONObject responseObject = null;
                 try {
                     responseObject = new JSONObject(response);
                 } catch (JSONException e) {
@@ -176,6 +183,7 @@ public class HatcHttpRequest {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, mUrl + ":" + error.getMessage(), error);
                 hatcHttpJSONListener.onException(error);
             }
         }) {

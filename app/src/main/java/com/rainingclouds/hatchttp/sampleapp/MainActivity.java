@@ -24,7 +24,7 @@ public class MainActivity extends ActionBarActivity {
         mHandler = new Handler();
         setContentView(R.layout.activity_my);
         mResponseTextView = (TextView) findViewById(R.id.response_text_view);
-        HatcHttpRequest.GET("http://ww.google.com")
+        HatcHttpRequest.GET("http://www.google.com")
                 .addHeader("Accept", "text/html")
                 .execute(new HatcHttpRequestListener() {
             @Override
