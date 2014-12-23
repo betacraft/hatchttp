@@ -3,20 +3,22 @@
 HatcHttp is a very simple and straightforward library for performing HTTP call inside your
 Android app. ~~This library is based on Netty~~
 
-* Removed netty based solution.
+### Removed netty based solution.
 
 We were facing an issue related with 65k+ method issue. So now this library uses Volley.
  
 ## Features
 
 ~~1. Based on Java NIO (thanks to netty and asynchttp)~~
-2. Asynchronous API calls, runs on a separate thread pool (ExecutorService)
+
+1. Asynchronous API calls, runs on a separate thread pool (ExecutorService)
+2. Uses network library used inside the Android framework.
 
 ## What is different ?
 
-### Based on Netty
+~~### Based on Netty~~
 
-This version of HatchHttp is based on Netty and leverage the advantage of NIO.
+~~This version of HatchHttp is based on Netty and leverage the advantage of NIO.~~
 
 ## How to use ?
 
