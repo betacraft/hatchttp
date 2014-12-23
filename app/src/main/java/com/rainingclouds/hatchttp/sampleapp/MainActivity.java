@@ -13,7 +13,6 @@ import com.rainingclouds.hatchttp.HatcHttpRequestListener;
 
 public class MainActivity extends ActionBarActivity {
 
-
     private EditText mUrlEditText;
     private Button mGoButton;
     private TextView mResponseTextView;

@@ -1,27 +1,42 @@
 package com.rainingclouds.hatchttp;
 
-import com.ning.http.client.AsyncHttpClient;
-import com.ning.http.client.AsyncHttpClientConfig;
-import com.rainingclouds.hatchttp.executors.EfficientThreadPoolExecutor;
 
-import java.util.concurrent.TimeUnit;
+import com.android.volley.Cache;
+import com.android.volley.Network;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.BasicNetwork;
+import com.android.volley.toolbox.HurlStack;
+import com.android.volley.toolbox.NoCache;
 
 /**
- * NingHttp Client
  * Created by akshay on 22/08/14.
  */
 class HatcHttpClient {
+    private static final String TAG = "###HatcHttpClient";
 
-    final static AsyncHttpClientConfig config = new AsyncHttpClientConfig.Builder()
-            .setAllowPoolingConnection(true)
-            .setFollowRedirects(true)
-            .setExecutorService(EfficientThreadPoolExecutor.get(3,10,1, TimeUnit.MINUTES,4,"hatcHttp_workers"))
-            .setRequestTimeoutInMs(30000)
-            .build();
-    private static AsyncHttpClient asyncHttpClient = new AsyncHttpClient(config);
 
-    public static AsyncHttpClient get() {
-        return asyncHttpClient;
+    private RequestQueue mRequestQueue;
+
+
+    private static HatcHttpClient Instance;
+
+    private HatcHttpClient() {
+        final Cache cache = new NoCache();
+        final Network network = new BasicNetwork(new HurlStack());
+        mRequestQueue = new RequestQueue(cache, network);
+        mRequestQueue.start();
+    }
+
+    public static HatcHttpClient Get() {
+        if (Instance != null)
+            return Instance;
+        Instance = new HatcHttpClient();
+        return Instance;
+    }
+
+    public <T> void addRequest(final Request<T> request) {
+        mRequestQueue.add(request);
     }
 
 }

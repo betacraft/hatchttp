@@ -1,12 +1,16 @@
 package com.rainingclouds.hatchttp;
 
-import com.ning.http.client.AsyncCompletionHandler;
-import com.ning.http.client.RequestBuilder;
-import com.ning.http.client.Response;
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This will be the only class available outside
@@ -19,14 +23,19 @@ public class HatcHttpRequest {
      * TAG for logging
      */
     private static final String TAG = "###HatcHttpRequest###";
-    private RequestBuilder mRequestBuilder;
+    private int mMethod;
+    private String mUrl;
+    private String mBody;
+    private Map<String, String> mHeaders;
+    private Map<String, String> mParams;
 
-
-    private HatcHttpRequest(final String url, final String method) {
-        mRequestBuilder = new RequestBuilder()
-                .setUrl(url)
-                .setMethod(method);
+    private HatcHttpRequest(final String url, final int method) {
+        mMethod = method;
+        mUrl = url;
+        mHeaders = new HashMap<>();
+        mParams = new HashMap<>();
     }
+
 
     /**
      * GET request
@@ -35,7 +44,7 @@ public class HatcHttpRequest {
      * @return current instance of @HatcHttpRequest
      */
     public static HatcHttpRequest GET(final String url) {
-        return new HatcHttpRequest(url, "GET");
+        return new HatcHttpRequest(url, Request.Method.GET);
     }
 
     /**
@@ -45,7 +54,7 @@ public class HatcHttpRequest {
      * @return current instance of @HatcHttpRequest
      */
     public static HatcHttpRequest POST(final String url) {
-        return new HatcHttpRequest(url, "POST");
+        return new HatcHttpRequest(url, Request.Method.POST);
     }
 
     /**
@@ -55,7 +64,8 @@ public class HatcHttpRequest {
      * @return current instance of @HatcHttpRequest
      */
     public static HatcHttpRequest PUT(final String url) {
-        return new HatcHttpRequest(url, "PUT");
+        return new HatcHttpRequest(url,
+                Request.Method.PUT);
     }
 
     /**
@@ -65,7 +75,7 @@ public class HatcHttpRequest {
      * @return current instance of @HatcHttpRequest
      */
     public static HatcHttpRequest DELETE(final String url) {
-        return new HatcHttpRequest(url, "DELETE");
+        return new HatcHttpRequest(url, Request.Method.DELETE);
     }
 
     /**
@@ -75,7 +85,7 @@ public class HatcHttpRequest {
      * @return current instance of @HatcHttpRequest
      */
     public static HatcHttpRequest PATCH(final String url) {
-        return new HatcHttpRequest(url, "PATCH");
+        return new HatcHttpRequest(url, Request.Method.PATCH);
     }
 
     /**
@@ -86,7 +96,7 @@ public class HatcHttpRequest {
      * @return current instance of @HatcHttpRequest
      */
     public HatcHttpRequest addHeader(final String name, final String value) {
-        mRequestBuilder.addHeader(name, value);
+        mHeaders.put(name, value);
         return this;
     }
 
@@ -98,7 +108,7 @@ public class HatcHttpRequest {
      * @return current instance of @HatcHttpRequest
      */
     public HatcHttpRequest addParam(final String name, final String value) {
-        mRequestBuilder.addQueryParameter(name, value);
+        mParams.put(name, value);
         return this;
     }
 
@@ -110,7 +120,7 @@ public class HatcHttpRequest {
      * @return current instance of @HatcHttpRequest
      */
     public HatcHttpRequest setContent(final String content) {
-        mRequestBuilder.setBody(content);
+        mBody = content;
         return this;
     }
 
@@ -121,52 +131,69 @@ public class HatcHttpRequest {
      * @param hatcHttpRequestListener listener for this request
      */
     public void execute(final HatcHttpRequestListener hatcHttpRequestListener) {
-        HatcHttpExecutor.Submit(new Runnable() {
+        final Request<String> request = new StringRequest(mMethod, mUrl, new Response.Listener<String>() {
             @Override
-            public void run() {
-                try {
-                    HatcHttpClient.get().executeRequest(mRequestBuilder.build(), new AsyncCompletionHandler<Object>() {
-                        @Override
-                        public Object onCompleted(final Response response) throws Exception {
-                            hatcHttpRequestListener.onComplete(response.getStatusCode(), response.getResponseBody());
-                            return null;
-                        }
-
-                        @Override
-                        public void onThrowable(final Throwable t) {
-                            super.onThrowable(t);
-                            hatcHttpRequestListener.onException(t);
-                        }
-                    });
-                } catch (IOException exception) {
-                    hatcHttpRequestListener.onException(exception);
-                }
+            public void onResponse(String response) {
+                hatcHttpRequestListener.onComplete(200, response);
             }
-        });
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                hatcHttpRequestListener.onException(error);
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return mHeaders;
+            }
+
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                return mParams;
+            }
+
+            @Override
+            public byte[] getBody() throws AuthFailureError {
+                return mBody.getBytes();
+            }
+        };
+        HatcHttpClient.Get().addRequest(request);
     }
 
     public void execute(final HatcHttpJSONListener hatcHttpJSONListener) {
-        HatcHttpExecutor.Submit(new Runnable() {
+        final Request<String> request = new StringRequest(mMethod, mUrl, new Response.Listener<String>() {
             @Override
-            public void run() {
+            public void onResponse(final String response) {
+                JSONObject responseObject= null;
                 try {
-                    HatcHttpClient.get().executeRequest(mRequestBuilder.build(), new AsyncCompletionHandler<Object>() {
-                        @Override
-                        public Object onCompleted(final Response response) throws Exception {
-                            hatcHttpJSONListener.onComplete(response.getStatusCode(), new JSONObject(response.getResponseBody()));
-                            return null;
-                        }
-
-                        @Override
-                        public void onThrowable(final Throwable t) {
-                            super.onThrowable(t);
-                            hatcHttpJSONListener.onException(t);
-                        }
-                    });
-                } catch (IOException exception) {
-                    hatcHttpJSONListener.onException(exception);
+                    responseObject = new JSONObject(response);
+                } catch (JSONException e) {
+                    hatcHttpJSONListener.onException(e);
+                    return;
                 }
+                hatcHttpJSONListener.onComplete(200, responseObject);
             }
-        });
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                hatcHttpJSONListener.onException(error);
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return mHeaders;
+            }
+
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                return mParams;
+            }
+
+            @Override
+            public byte[] getBody() throws AuthFailureError {
+                return mBody.getBytes();
+            }
+        };
+        HatcHttpClient.Get().addRequest(request);
     }
 }
