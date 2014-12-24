@@ -24,8 +24,9 @@ public class MainActivity extends ActionBarActivity {
         mHandler = new Handler();
         setContentView(R.layout.activity_my);
         mResponseTextView = (TextView) findViewById(R.id.response_text_view);
-        HatcHttpRequest.GET("http://www.google.com")
-                .addHeader("Accept", "text/html")
+        HatcHttpRequest.GET("https://maps.googleapis.com/maps/api/geocode/json")
+                .addHeader("Accept", "application/json")
+                .addParam("address","101, Baner Balewadi Road, Prathamesh Park, Baner, Pune, Maharashtra 411045, India")
                 .execute(new HatcHttpRequestListener() {
             @Override
             public void onComplete(int status, final String response) {
