@@ -1,6 +1,7 @@
 package com.rainingclouds.hatchttp;
 
 import android.net.Uri;
+import android.util.Base64;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
@@ -12,7 +13,6 @@ import com.android.volley.toolbox.StringRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +32,7 @@ public class HatcHttpRequest {
     private String mBody;
     private Map<String, String> mHeaders;
     private Map<String, String> mParams;
+    private String mAuth;
 
     private HatcHttpRequest(final String url, final int method) {
         mMethod = method;
@@ -117,6 +118,12 @@ public class HatcHttpRequest {
     }
 
 
+    public HatcHttpRequest addAuth(final String userName, final String password) {
+        final String creds = String.format("%s:%s", userName, password);
+        mAuth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.DEFAULT);
+        return this;
+    }
+
     /**
      * To set content of the current request
      *
@@ -135,10 +142,10 @@ public class HatcHttpRequest {
      * @param hatcHttpRequestListener listener for this request
      */
     public void execute(final HatcHttpRequestListener hatcHttpRequestListener) {
-        if (mMethod == Request.Method.GET){
+        if (mMethod == Request.Method.GET) {
             final Uri.Builder builder = Uri.parse(mUrl).buildUpon();
-            for(Map.Entry<String,String> param:mParams.entrySet()){
-                builder.appendQueryParameter(param.getKey(),param.getValue());
+            for (Map.Entry<String, String> param : mParams.entrySet()) {
+                builder.appendQueryParameter(param.getKey(), param.getValue());
             }
             mUrl = builder.build().toString();
         }
@@ -158,6 +165,9 @@ public class HatcHttpRequest {
         }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
+                if (mAuth.isEmpty())
+                    return mHeaders;
+                mHeaders.put("Authorization",mAuth);
                 return mHeaders;
             }
 
@@ -168,7 +178,7 @@ public class HatcHttpRequest {
 
             @Override
             public byte[] getBody() throws AuthFailureError {
-                if(mBody == null)
+                if (mBody == null)
                     return null;
                 return mBody.getBytes();
             }
@@ -177,10 +187,10 @@ public class HatcHttpRequest {
     }
 
     public void execute(final HatcHttpJSONListener hatcHttpJSONListener) {
-        if (mMethod == Request.Method.GET){
+        if (mMethod == Request.Method.GET) {
             final Uri.Builder builder = Uri.parse(mUrl).buildUpon();
-            for(Map.Entry<String,String> param:mParams.entrySet()){
-                builder.appendQueryParameter(param.getKey(),param.getValue());
+            for (Map.Entry<String, String> param : mParams.entrySet()) {
+                builder.appendQueryParameter(param.getKey(), param.getValue());
             }
             mUrl = builder.build().toString();
         }
@@ -207,7 +217,11 @@ public class HatcHttpRequest {
         }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
+                if (mAuth.isEmpty())
+                    return mHeaders;
+                mHeaders.put("Authorization",mAuth);
                 return mHeaders;
+
             }
 
             @Override
@@ -218,7 +232,7 @@ public class HatcHttpRequest {
 
             @Override
             public byte[] getBody() throws AuthFailureError {
-                if(mBody == null)
+                if (mBody == null)
                     return null;
                 return mBody.getBytes();
             }
