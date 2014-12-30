@@ -165,7 +165,7 @@ public class HatcHttpRequest {
         }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                if (mAuth.isEmpty())
+                if (mAuth == null)
                     return mHeaders;
                 mHeaders.put("Authorization",mAuth);
                 return mHeaders;
@@ -217,7 +217,7 @@ public class HatcHttpRequest {
         }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                if (mAuth.isEmpty())
+                if (mAuth == null)
                     return mHeaders;
                 mHeaders.put("Authorization",mAuth);
                 return mHeaders;
