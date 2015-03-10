@@ -142,13 +142,11 @@ public class HatcHttpRequest {
      * @param hatcHttpRequestListener listener for this request
      */
     public void execute(final HatcHttpRequestListener hatcHttpRequestListener) {
-        if (mMethod == Request.Method.GET) {
-            final Uri.Builder builder = Uri.parse(mUrl).buildUpon();
-            for (Map.Entry<String, String> param : mParams.entrySet()) {
-                builder.appendQueryParameter(param.getKey(), param.getValue());
-            }
-            mUrl = builder.build().toString();
+        final Uri.Builder builder = Uri.parse(mUrl).buildUpon();
+        for (Map.Entry<String, String> param : mParams.entrySet()) {
+            builder.appendQueryParameter(param.getKey(), param.getValue());
         }
+        mUrl = builder.build().toString();
         Log.d(TAG, "Calling =>" + mUrl);
         final Request<String> request = new StringRequest(mMethod, mUrl, new Response.Listener<String>() {
             @Override
@@ -167,7 +165,7 @@ public class HatcHttpRequest {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 if (mAuth == null)
                     return mHeaders;
-                mHeaders.put("Authorization",mAuth);
+                mHeaders.put("Authorization", mAuth);
                 return mHeaders;
             }
 
@@ -187,14 +185,13 @@ public class HatcHttpRequest {
     }
 
     public void execute(final HatcHttpJSONListener hatcHttpJSONListener) {
-        if (mMethod == Request.Method.GET) {
-            final Uri.Builder builder = Uri.parse(mUrl).buildUpon();
-            for (Map.Entry<String, String> param : mParams.entrySet()) {
-                builder.appendQueryParameter(param.getKey(), param.getValue());
-            }
-            mUrl = builder.build().toString();
+        final Uri.Builder builder = Uri.parse(mUrl).buildUpon();
+        for (Map.Entry<String, String> param : mParams.entrySet()) {
+            builder.appendQueryParameter(param.getKey(), param.getValue());
         }
+        mUrl = builder.build().toString();
         Log.d(TAG, "Calling =>" + mUrl);
+
         final Request<String> request = new StringRequest(mMethod, mUrl, new Response.Listener<String>() {
             @Override
             public void onResponse(final String response) {
@@ -215,11 +212,12 @@ public class HatcHttpRequest {
                 hatcHttpJSONListener.onException(error);
             }
         }) {
+
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 if (mAuth == null)
                     return mHeaders;
-                mHeaders.put("Authorization",mAuth);
+                mHeaders.put("Authorization", mAuth);
                 return mHeaders;
 
             }
