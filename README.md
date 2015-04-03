@@ -30,7 +30,7 @@ We were facing an issue related with 65k+ method issue. So now this library uses
 ```
 2. Add the dependency
 ```gradle
-    compile 'hatchttp:library:1.3.4'
+    compile 'hatchttp:library:1.3.7'
 ```
 Add following permissions in your AndroidManifest.xml
 ```xml
