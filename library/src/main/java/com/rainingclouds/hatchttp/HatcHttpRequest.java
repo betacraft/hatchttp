@@ -158,7 +158,11 @@ public class HatcHttpRequest {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e(TAG, mUrl + ":" + error.getMessage(), error);
-                hatcHttpRequestListener.onException(new Throwable(new String(error.networkResponse.data)));
+                if (error.networkResponse != null) {
+                    hatcHttpRequestListener.onException(new Throwable(new String(error.networkResponse.data)));
+                    return;
+                }
+                hatcHttpRequestListener.onException(error.getCause());
             }
         }) {
             @Override
@@ -209,7 +213,11 @@ public class HatcHttpRequest {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e(TAG, mUrl + ":" + error.getMessage(), error);
-                hatcHttpJSONListener.onException(new Throwable(new String(error.networkResponse.data)));
+                if (error.networkResponse != null) {
+                    hatcHttpJSONListener.onException(new Throwable(new String(error.networkResponse.data)));
+                    return;
+                }
+                hatcHttpJSONListener.onException(error);
             }
         }) {
 
