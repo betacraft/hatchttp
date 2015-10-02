@@ -5,8 +5,11 @@ import android.util.Base64;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 
@@ -33,12 +36,18 @@ public class HatcHttpRequest {
     private Map<String, String> mHeaders;
     private Map<String, String> mParams;
     private String mAuth;
+    private DefaultRetryPolicy retryPolicy;
 
     private HatcHttpRequest(final String url, final int method) {
         mMethod = method;
         mUrl = url;
         mHeaders = new HashMap<>();
         mParams = new HashMap<>();
+        retryPolicy = new DefaultRetryPolicy(
+                HatcHttpConfig.getRequestTimeOut() == 0 ?
+                        DefaultRetryPolicy.DEFAULT_TIMEOUT_MS : HatcHttpConfig.getRequestTimeOut(),
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
     }
 
 
@@ -152,17 +161,17 @@ public class HatcHttpRequest {
             @Override
             public void onResponse(String response) {
                 Log.d(TAG, mUrl + ":" + response);
+                if(response == null || response.length() == 0){
+                    hatcHttpRequestListener.onException(new Throwable("Invalid response"));
+                    return;
+                }
                 hatcHttpRequestListener.onComplete(200, response);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e(TAG, mUrl + ":" + error.getMessage(), error);
-                if (error.networkResponse != null) {
-                    hatcHttpRequestListener.onException(new Throwable(new String(error.networkResponse.data)));
-                    return;
-                }
-                hatcHttpRequestListener.onException(error.getCause());
+                hatcHttpRequestListener.onException(getException(error));
             }
         }) {
             @Override
@@ -185,6 +194,7 @@ public class HatcHttpRequest {
                 return mBody.getBytes();
             }
         };
+        request.setRetryPolicy(retryPolicy);
         HatcHttpClient.Get().addRequest(request);
     }
 
@@ -213,11 +223,7 @@ public class HatcHttpRequest {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e(TAG, mUrl + ":" + error.getMessage(), error);
-                if (error.networkResponse != null) {
-                    hatcHttpJSONListener.onException(new Throwable(new String(error.networkResponse.data)));
-                    return;
-                }
-                hatcHttpJSONListener.onException(error);
+                hatcHttpJSONListener.onException(getException(error));
             }
         }) {
 
@@ -243,6 +249,19 @@ public class HatcHttpRequest {
                 return mBody.getBytes();
             }
         };
+        request.setRetryPolicy(retryPolicy);
         HatcHttpClient.Get().addRequest(request);
+    }
+
+    private Throwable getException(VolleyError error){
+        if(error instanceof TimeoutError)
+            return new com.rainingclouds.hatchttp.exception.TimeoutError();
+        if(error instanceof NoConnectionError)
+            return new com.rainingclouds.hatchttp.exception.NoConnectionError(error);
+        if (error.networkResponse != null)
+            return new Throwable(new String(error.networkResponse.data));
+        if(error.getCause() == null)
+            return new Throwable("Unknown error");
+        return error.getCause();
     }
 }
